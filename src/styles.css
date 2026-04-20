@@ -343,8 +343,8 @@
 
 /* ============================ Utility classes ============================ */
 @layer utilities {
-  .font-display { font-family: var(--font-display); letter-spacing: -0.02em; }
-  .font-mono { font-family: var(--font-mono); }
+  .font-display { font-family: var(--font-display); letter-spacing: -0.024em; font-weight: 600; }
+  .font-mono { font-family: var(--font-mono); letter-spacing: 0; }
 
   .glass {
     background: color-mix(in oklab, var(--surface) 80%, transparent);
