@@ -2,11 +2,12 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import { AppShell } from "@/components/AppShell";
 import { SectionHeader } from "@/components/SectionHeader";
+import { DateTimePicker } from "@/components/DateTimePicker";
+import { format } from "date-fns";
 import {
   Sparkles,
   Hash,
   Target as TargetIcon,
-  Clock,
   Image as ImageIcon,
   Film,
   LayoutGrid,
@@ -38,9 +39,18 @@ const MAX_CHARS = 2200;
 function PredictPage() {
   const navigate = useNavigate();
   const [account, setAccount] = useState(ACCOUNTS[0]);
-  const [format, setFormat] = useState<string>("reels");
-  const [time, setTime] = useState("19:30");
-  const [day, setDay] = useState("Wed");
+  const [format_, setFormat] = useState<string>("reels");
+
+  // Single timestamp drives both date and time — Apple-like, no manual input
+  const [scheduledAt, setScheduledAt] = useState<Date>(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    d.setHours(19, 30, 0, 0);
+    return d;
+  });
+  const day = format(scheduledAt, "EEE");
+  const timeLabel = format(scheduledAt, "HH:mm");
+
   const [caption, setCaption] = useState(
     "Behind every drop is a 4am sketch. Here's the unfiltered story of how we built our spring capsule — from late nights to first ship. Save this if you've ever doubted a 2am idea. ✨\n\nWhat's the one project that almost didn't make it?"
   );
@@ -118,23 +128,12 @@ function PredictPage() {
                   </select>
                 </div>
                 <div>
-                  <Label>Posting day</Label>
-                  <div className="mt-1.5 flex gap-1 rounded-xl border border-border bg-surface/60 p-1">
-                    {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
-                      <button
-                        key={d}
-                        type="button"
-                        onClick={() => setDay(d)}
-                        className={`flex-1 rounded-lg py-2 text-xs font-medium transition-all ${
-                          day === d
-                            ? "bg-primary text-primary-foreground shadow-[var(--shadow-glow-cyan)]"
-                            : "text-muted-foreground hover:text-foreground"
-                        }`}
-                      >
-                        {d}
-                      </button>
-                    ))}
-                  </div>
+                  <Label>Schedule</Label>
+                  <DateTimePicker
+                    value={scheduledAt}
+                    onChange={setScheduledAt}
+                    className="mt-1.5"
+                  />
                 </div>
               </div>
 
@@ -142,7 +141,7 @@ function PredictPage() {
                 <Label>Format</Label>
                 <div className="mt-1.5 grid grid-cols-2 gap-2 sm:grid-cols-4">
                   {FORMATS.map((f) => {
-                    const active = format === f.id;
+                    const active = format_ === f.id;
                     return (
                       <button
                         key={f.id}
@@ -272,21 +271,17 @@ function PredictPage() {
 
           {/* SIDE COLUMN */}
           <div className="space-y-6">
-            <Panel title="Posting window" subtitle="When does this go live?">
-              <Label>Time (local)</Label>
-              <div className="mt-1.5 flex items-center gap-2 rounded-xl border border-border bg-surface/60 px-4">
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                <input
-                  type="time"
-                  value={time}
-                  onChange={(e) => setTime(e.target.value)}
-                  className="h-12 flex-1 bg-transparent text-sm outline-none"
-                />
-              </div>
-              <div className="mt-3 rounded-lg border border-border bg-surface-2 p-3 text-xs leading-relaxed text-muted-foreground">
+            <Panel title="Posting window" subtitle="When this goes live.">
+              <Label>Scheduled for</Label>
+              <DateTimePicker
+                value={scheduledAt}
+                onChange={setScheduledAt}
+                className="mt-1.5"
+              />
+              <div className="mt-3 rounded-lg bg-surface-2 p-3 text-xs leading-relaxed text-muted-foreground">
                 <span className="font-medium text-primary">Tip:</span> Audience for {account}{" "}
                 peaks <span className="font-mono text-foreground">20:15</span> on {day}s.
-                Window {time} sits in the second-best slot.
+                Window <span className="font-mono text-foreground">{timeLabel}</span> sits in the second-best slot.
               </div>
             </Panel>
 
