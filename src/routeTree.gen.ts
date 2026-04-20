@@ -9,8 +9,56 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SuggestRouteImport } from './routes/suggest'
+import { Route as ResultRouteImport } from './routes/result'
+import { Route as PredictRouteImport } from './routes/predict'
+import { Route as DiagnoseRouteImport } from './routes/diagnose'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as BatchRouteImport } from './routes/batch'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AbTestRouteImport } from './routes/ab-test'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SuggestRoute = SuggestRouteImport.update({
+  id: '/suggest',
+  path: '/suggest',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResultRoute = ResultRouteImport.update({
+  id: '/result',
+  path: '/result',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PredictRoute = PredictRouteImport.update({
+  id: '/predict',
+  path: '/predict',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiagnoseRoute = DiagnoseRouteImport.update({
+  id: '/diagnose',
+  path: '/diagnose',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BatchRoute = BatchRouteImport.update({
+  id: '/batch',
+  path: '/batch',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AbTestRoute = AbTestRouteImport.update({
+  id: '/ab-test',
+  path: '/ab-test',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +67,144 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ab-test': typeof AbTestRoute
+  '/admin': typeof AdminRoute
+  '/batch': typeof BatchRoute
+  '/dashboard': typeof DashboardRoute
+  '/diagnose': typeof DiagnoseRoute
+  '/predict': typeof PredictRoute
+  '/result': typeof ResultRoute
+  '/suggest': typeof SuggestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ab-test': typeof AbTestRoute
+  '/admin': typeof AdminRoute
+  '/batch': typeof BatchRoute
+  '/dashboard': typeof DashboardRoute
+  '/diagnose': typeof DiagnoseRoute
+  '/predict': typeof PredictRoute
+  '/result': typeof ResultRoute
+  '/suggest': typeof SuggestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ab-test': typeof AbTestRoute
+  '/admin': typeof AdminRoute
+  '/batch': typeof BatchRoute
+  '/dashboard': typeof DashboardRoute
+  '/diagnose': typeof DiagnoseRoute
+  '/predict': typeof PredictRoute
+  '/result': typeof ResultRoute
+  '/suggest': typeof SuggestRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/ab-test'
+    | '/admin'
+    | '/batch'
+    | '/dashboard'
+    | '/diagnose'
+    | '/predict'
+    | '/result'
+    | '/suggest'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/ab-test'
+    | '/admin'
+    | '/batch'
+    | '/dashboard'
+    | '/diagnose'
+    | '/predict'
+    | '/result'
+    | '/suggest'
+  id:
+    | '__root__'
+    | '/'
+    | '/ab-test'
+    | '/admin'
+    | '/batch'
+    | '/dashboard'
+    | '/diagnose'
+    | '/predict'
+    | '/result'
+    | '/suggest'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AbTestRoute: typeof AbTestRoute
+  AdminRoute: typeof AdminRoute
+  BatchRoute: typeof BatchRoute
+  DashboardRoute: typeof DashboardRoute
+  DiagnoseRoute: typeof DiagnoseRoute
+  PredictRoute: typeof PredictRoute
+  ResultRoute: typeof ResultRoute
+  SuggestRoute: typeof SuggestRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/suggest': {
+      id: '/suggest'
+      path: '/suggest'
+      fullPath: '/suggest'
+      preLoaderRoute: typeof SuggestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/result': {
+      id: '/result'
+      path: '/result'
+      fullPath: '/result'
+      preLoaderRoute: typeof ResultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/predict': {
+      id: '/predict'
+      path: '/predict'
+      fullPath: '/predict'
+      preLoaderRoute: typeof PredictRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/diagnose': {
+      id: '/diagnose'
+      path: '/diagnose'
+      fullPath: '/diagnose'
+      preLoaderRoute: typeof DiagnoseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/batch': {
+      id: '/batch'
+      path: '/batch'
+      fullPath: '/batch'
+      preLoaderRoute: typeof BatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ab-test': {
+      id: '/ab-test'
+      path: '/ab-test'
+      fullPath: '/ab-test'
+      preLoaderRoute: typeof AbTestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,16 +217,15 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AbTestRoute: AbTestRoute,
+  AdminRoute: AdminRoute,
+  BatchRoute: BatchRoute,
+  DashboardRoute: DashboardRoute,
+  DiagnoseRoute: DiagnoseRoute,
+  PredictRoute: PredictRoute,
+  ResultRoute: ResultRoute,
+  SuggestRoute: SuggestRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
