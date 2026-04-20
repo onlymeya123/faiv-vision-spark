@@ -334,17 +334,17 @@ function DashboardPage() {
                   glow: "var(--accent-lime)",
                 },
                 {
-                  to: "/ab-test" as const,
+                  to: "/diagnose" as const,
                   icon: Zap,
-                  title: "A/B test captions",
-                  desc: "Compare two variants",
+                  title: "Diagnose post",
+                  desc: "Inspect feature impact",
                   glow: "var(--secondary-glow)",
                 },
                 {
-                  to: "/batch" as const,
+                  to: "/suggest" as const,
                   icon: Target,
-                  title: "Batch predict",
-                  desc: "Score a CSV of posts",
+                  title: "Get suggestions",
+                  desc: "AI-powered rewrites",
                   glow: "var(--success)",
                 },
               ].map((a, i) => (

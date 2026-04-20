@@ -5,8 +5,6 @@ import {
   Sparkles,
   Activity,
   Lightbulb,
-  GitCompare,
-  Layers,
   Shield,
   Search,
   Bell,
@@ -22,8 +20,6 @@ const NAV = [
   { to: "/calendar", label: "Calendar", icon: CalendarDays },
   { to: "/diagnose", label: "Diagnose", icon: Activity },
   { to: "/suggest", label: "Suggest", icon: Lightbulb },
-  { to: "/ab-test", label: "A/B Test", icon: GitCompare },
-  { to: "/batch", label: "Batch", icon: Layers },
   { to: "/admin", label: "Admin", icon: Shield },
 ] as const;
 

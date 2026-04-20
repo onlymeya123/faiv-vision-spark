@@ -15,9 +15,7 @@ import { Route as PredictRouteImport } from './routes/predict'
 import { Route as DiagnoseRouteImport } from './routes/diagnose'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CalendarRouteImport } from './routes/calendar'
-import { Route as BatchRouteImport } from './routes/batch'
 import { Route as AdminRouteImport } from './routes/admin'
-import { Route as AbTestRouteImport } from './routes/ab-test'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SuggestRoute = SuggestRouteImport.update({
@@ -50,19 +48,9 @@ const CalendarRoute = CalendarRouteImport.update({
   path: '/calendar',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BatchRoute = BatchRouteImport.update({
-  id: '/batch',
-  path: '/batch',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AbTestRoute = AbTestRouteImport.update({
-  id: '/ab-test',
-  path: '/ab-test',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -73,9 +61,7 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/ab-test': typeof AbTestRoute
   '/admin': typeof AdminRoute
-  '/batch': typeof BatchRoute
   '/calendar': typeof CalendarRoute
   '/dashboard': typeof DashboardRoute
   '/diagnose': typeof DiagnoseRoute
@@ -85,9 +71,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/ab-test': typeof AbTestRoute
   '/admin': typeof AdminRoute
-  '/batch': typeof BatchRoute
   '/calendar': typeof CalendarRoute
   '/dashboard': typeof DashboardRoute
   '/diagnose': typeof DiagnoseRoute
@@ -98,9 +82,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/ab-test': typeof AbTestRoute
   '/admin': typeof AdminRoute
-  '/batch': typeof BatchRoute
   '/calendar': typeof CalendarRoute
   '/dashboard': typeof DashboardRoute
   '/diagnose': typeof DiagnoseRoute
@@ -112,9 +94,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/ab-test'
     | '/admin'
-    | '/batch'
     | '/calendar'
     | '/dashboard'
     | '/diagnose'
@@ -124,9 +104,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/ab-test'
     | '/admin'
-    | '/batch'
     | '/calendar'
     | '/dashboard'
     | '/diagnose'
@@ -136,9 +114,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/ab-test'
     | '/admin'
-    | '/batch'
     | '/calendar'
     | '/dashboard'
     | '/diagnose'
@@ -149,9 +125,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AbTestRoute: typeof AbTestRoute
   AdminRoute: typeof AdminRoute
-  BatchRoute: typeof BatchRoute
   CalendarRoute: typeof CalendarRoute
   DashboardRoute: typeof DashboardRoute
   DiagnoseRoute: typeof DiagnoseRoute
@@ -204,25 +178,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CalendarRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/batch': {
-      id: '/batch'
-      path: '/batch'
-      fullPath: '/batch'
-      preLoaderRoute: typeof BatchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin': {
       id: '/admin'
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ab-test': {
-      id: '/ab-test'
-      path: '/ab-test'
-      fullPath: '/ab-test'
-      preLoaderRoute: typeof AbTestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -237,9 +197,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AbTestRoute: AbTestRoute,
   AdminRoute: AdminRoute,
-  BatchRoute: BatchRoute,
   CalendarRoute: CalendarRoute,
   DashboardRoute: DashboardRoute,
   DiagnoseRoute: DiagnoseRoute,
