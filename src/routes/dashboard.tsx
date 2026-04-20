@@ -308,6 +308,11 @@ function DashboardPage() {
           </div>
         </section>
 
+        {/* Posting heatmap */}
+        <section className="mb-10 rounded-2xl border border-border bg-surface p-6 shadow-[var(--shadow-soft)]">
+          <PostingHeatmap />
+        </section>
+
         {/* Quick actions + recent predictions */}
         <section className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
           <div>
@@ -320,6 +325,13 @@ function DashboardPage() {
                   title: "New prediction",
                   desc: "Score a single post",
                   glow: "var(--primary)",
+                },
+                {
+                  to: "/calendar" as const,
+                  icon: CalendarDays,
+                  title: "Open calendar",
+                  desc: "Plan the month",
+                  glow: "var(--accent-lime)",
                 },
                 {
                   to: "/ab-test" as const,
