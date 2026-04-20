@@ -17,7 +17,8 @@ import {
   YAxis,
   CartesianGrid,
 } from "recharts";
-import { ArrowUpRight, ArrowDownRight, Sparkles, Zap, Target, FlaskConical } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, Sparkles, Zap, Target, FlaskConical, CalendarDays } from "lucide-react";
+import { PostingHeatmap } from "@/components/PostingHeatmap";
 import type { Tier } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/dashboard")({
@@ -82,7 +83,7 @@ function DashboardPage() {
                 <div className="flex flex-wrap gap-3 pt-2">
                   <Link
                     to="/predict"
-                    className="group inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow-cyan)] transition-all hover:scale-[1.02]"
+                    className="group inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow-purple)] transition-all hover:scale-[1.02]"
                   >
                     <Sparkles className="h-4 w-4" />
                     Run a prediction
@@ -121,14 +122,14 @@ function DashboardPage() {
                       <AreaChart data={USAGE_TREND.slice(-14)} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
                         <defs>
                           <linearGradient id="hero-grad" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="oklch(0.78 0.18 198)" stopOpacity={0.6} />
-                            <stop offset="100%" stopColor="oklch(0.78 0.18 198)" stopOpacity={0} />
+                            <stop offset="0%" stopColor="oklch(0.55 0.18 295)" stopOpacity={0.5} />
+                            <stop offset="100%" stopColor="oklch(0.55 0.18 295)" stopOpacity={0} />
                           </linearGradient>
                         </defs>
                         <Area
                           type="monotone"
                           dataKey="predictions"
-                          stroke="oklch(0.78 0.18 198)"
+                          stroke="oklch(0.55 0.18 295)"
                           strokeWidth={2}
                           fill="url(#hero-grad)"
                         />
@@ -215,48 +216,49 @@ function DashboardPage() {
                 <AreaChart data={USAGE_TREND} margin={{ top: 10, right: 8, left: -10, bottom: 0 }}>
                   <defs>
                     <linearGradient id="pred-grad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="oklch(0.78 0.18 198)" stopOpacity={0.5} />
-                      <stop offset="100%" stopColor="oklch(0.78 0.18 198)" stopOpacity={0} />
+                      <stop offset="0%" stopColor="oklch(0.55 0.18 295)" stopOpacity={0.45} />
+                      <stop offset="100%" stopColor="oklch(0.55 0.18 295)" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="viral-grad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="oklch(0.66 0.24 295)" stopOpacity={0.4} />
-                      <stop offset="100%" stopColor="oklch(0.66 0.24 295)" stopOpacity={0} />
+                      <stop offset="0%" stopColor="oklch(0.78 0.18 130)" stopOpacity={0.45} />
+                      <stop offset="100%" stopColor="oklch(0.78 0.18 130)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid stroke="oklch(1 0 0 / 0.05)" vertical={false} />
+                  <CartesianGrid stroke="oklch(0.22 0.02 280 / 0.06)" vertical={false} />
                   <XAxis
                     dataKey="day"
-                    stroke="oklch(0.6 0.02 255)"
+                    stroke="oklch(0.5 0.02 280)"
                     fontSize={11}
                     tickLine={false}
                     axisLine={false}
                   />
                   <YAxis
-                    stroke="oklch(0.6 0.02 255)"
+                    stroke="oklch(0.5 0.02 280)"
                     fontSize={11}
                     tickLine={false}
                     axisLine={false}
                   />
                   <Tooltip
                     contentStyle={{
-                      background: "oklch(0.22 0.03 265)",
-                      border: "1px solid oklch(1 0 0 / 0.12)",
+                      background: "var(--surface)",
+                      border: "1px solid var(--border-strong)",
                       borderRadius: 12,
                       fontSize: 12,
+                      boxShadow: "var(--shadow-elevated)",
                     }}
-                    cursor={{ stroke: "oklch(0.78 0.18 198)", strokeWidth: 1, strokeDasharray: "3 3" }}
+                    cursor={{ stroke: "oklch(0.55 0.18 295)", strokeWidth: 1, strokeDasharray: "3 3" }}
                   />
                   <Area
                     type="monotone"
                     dataKey="predictions"
-                    stroke="oklch(0.78 0.18 198)"
+                    stroke="oklch(0.55 0.18 295)"
                     strokeWidth={2}
                     fill="url(#pred-grad)"
                   />
                   <Area
                     type="monotone"
                     dataKey="viral"
-                    stroke="oklch(0.66 0.24 295)"
+                    stroke="oklch(0.78 0.18 130)"
                     strokeWidth={2}
                     fill="url(#viral-grad)"
                   />
