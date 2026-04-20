@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { SectionHeader } from "@/components/SectionHeader";
+import { FlowStepper } from "@/components/FlowStepper";
 import { FEATURE_IMPORTANCE } from "@/lib/mock-data";
 import { TrendingUp, TrendingDown, Info } from "lucide-react";
 import {
@@ -37,6 +38,9 @@ function DiagnosePage() {
   return (
     <AppShell>
       <div className="px-5 py-8 md:px-10 md:py-10">
+        <div className="mb-6">
+          <FlowStepper />
+        </div>
         <SectionHeader
           eyebrow="Diagnose"
           title="Why this score?"
