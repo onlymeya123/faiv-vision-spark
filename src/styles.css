@@ -291,9 +291,18 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
-    font-feature-settings: "ss01", "cv11";
+    font-feature-settings: "ss01", "cv11", "ss02";
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    letter-spacing: -0.011em;
   }
+
+  /* Apple-like type scale: tighter tracking on larger sizes */
+  h1, .h1 { letter-spacing: -0.028em; font-weight: 600; }
+  h2, .h2 { letter-spacing: -0.024em; font-weight: 600; }
+  h3, .h3 { letter-spacing: -0.020em; font-weight: 600; }
+  h4, h5, h6 { letter-spacing: -0.016em; font-weight: 600; }
 
   body {
     background-image: var(--gradient-aurora);
@@ -316,6 +325,19 @@
   }
   ::-webkit-scrollbar-thumb:hover {
     background: color-mix(in oklab, var(--primary) 40%, transparent);
+  }
+
+  /* Universal motion baseline */
+  button, a, [role="button"] {
+    transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+                background-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
+                color 180ms cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  button:active, [role="button"]:active {
+    transform: scale(0.97);
   }
 }
 
