@@ -2,11 +2,12 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import { AppShell } from "@/components/AppShell";
 import { SectionHeader } from "@/components/SectionHeader";
+import { DateTimePicker } from "@/components/DateTimePicker";
+import { format } from "date-fns";
 import {
   Sparkles,
   Hash,
   Target as TargetIcon,
-  Clock,
   Image as ImageIcon,
   Film,
   LayoutGrid,
