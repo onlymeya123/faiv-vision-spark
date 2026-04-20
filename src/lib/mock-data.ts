@@ -242,9 +242,9 @@ export const TIER_META: Record<Tier, { label: string; color: string; bg: string;
   },
   Average: {
     label: "Average",
-    color: "text-[oklch(0.40_0.10_230)]",
-    bg: "bg-[color-mix(in_oklab,var(--chart-3)_15%,transparent)]",
-    ring: "ring-[color-mix(in_oklab,var(--chart-3)_35%,transparent)]",
+    color: "text-[oklch(0.45_0.14_75)] dark:text-[oklch(0.85_0.16_75)]",
+    bg: "bg-[color-mix(in_oklab,var(--warning)_14%,transparent)]",
+    ring: "ring-[color-mix(in_oklab,var(--warning)_35%,transparent)]",
   },
   Weak: {
     label: "Weak",
