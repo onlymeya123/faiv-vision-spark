@@ -39,9 +39,18 @@ const MAX_CHARS = 2200;
 function PredictPage() {
   const navigate = useNavigate();
   const [account, setAccount] = useState(ACCOUNTS[0]);
-  const [format, setFormat] = useState<string>("reels");
-  const [time, setTime] = useState("19:30");
-  const [day, setDay] = useState("Wed");
+  const [format_, setFormat] = useState<string>("reels");
+
+  // Single timestamp drives both date and time — Apple-like, no manual input
+  const [scheduledAt, setScheduledAt] = useState<Date>(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    d.setHours(19, 30, 0, 0);
+    return d;
+  });
+  const day = format(scheduledAt, "EEE");
+  const timeLabel = format(scheduledAt, "HH:mm");
+
   const [caption, setCaption] = useState(
     "Behind every drop is a 4am sketch. Here's the unfiltered story of how we built our spring capsule — from late nights to first ship. Save this if you've ever doubted a 2am idea. ✨\n\nWhat's the one project that almost didn't make it?"
   );
