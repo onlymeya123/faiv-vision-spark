@@ -12,12 +12,14 @@ import {
   Bell,
   Sun,
   Moon,
+  CalendarDays,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/predict", label: "Predict", icon: Sparkles },
+  { to: "/calendar", label: "Calendar", icon: CalendarDays },
   { to: "/diagnose", label: "Diagnose", icon: Activity },
   { to: "/suggest", label: "Suggest", icon: Lightbulb },
   { to: "/ab-test", label: "A/B Test", icon: GitCompare },
@@ -27,7 +29,7 @@ const NAV = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const location = useLocation();
-  const [theme, setTheme] = React.useState<"dark" | "light">("dark");
+  const [theme, setTheme] = React.useState<"dark" | "light">("light");
 
   React.useEffect(() => {
     const root = document.documentElement;
@@ -190,13 +192,13 @@ export function Logo({ size = 36 }: { size?: number }) {
         width: size,
         height: size,
         background: "var(--gradient-primary)",
-        boxShadow: "var(--shadow-glow-cyan)",
+        boxShadow: "var(--shadow-glow-purple)",
       }}
     >
       <svg width={size * 0.55} height={size * 0.55} viewBox="0 0 24 24" fill="none">
         <path
           d="M4 20V4h12M4 12h9M16 14l4 4-4 4M20 18H10"
-          stroke="oklch(0.18 0.03 240)"
+          stroke="white"
           strokeWidth="2.4"
           strokeLinecap="round"
           strokeLinejoin="round"

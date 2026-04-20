@@ -36,7 +36,7 @@ export function ConfidenceMeter({
         <defs>
           <linearGradient id="conf-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="oklch(0.86 0.16 195)" />
-            <stop offset="100%" stopColor="oklch(0.66 0.24 295)" />
+            <stop offset="100%" stopColor="oklch(0.78 0.18 130)" />
           </linearGradient>
         </defs>
         <circle

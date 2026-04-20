@@ -124,15 +124,15 @@ function DiagnosePage() {
                   <PolarRadiusAxis tick={false} axisLine={false} />
                   <Radar
                     dataKey="baseline"
-                    stroke="oklch(0.66 0.24 295)"
-                    fill="oklch(0.66 0.24 295)"
+                    stroke="oklch(0.78 0.18 130)"
+                    fill="oklch(0.78 0.18 130)"
                     fillOpacity={0.15}
                     strokeWidth={1.5}
                   />
                   <Radar
                     dataKey="value"
-                    stroke="oklch(0.78 0.18 198)"
-                    fill="oklch(0.78 0.18 198)"
+                    stroke="oklch(0.55 0.18 295)"
+                    fill="oklch(0.55 0.18 295)"
                     fillOpacity={0.3}
                     strokeWidth={2}
                   />
