@@ -128,23 +128,12 @@ function PredictPage() {
                   </select>
                 </div>
                 <div>
-                  <Label>Posting day</Label>
-                  <div className="mt-1.5 flex gap-1 rounded-xl border border-border bg-surface/60 p-1">
-                    {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
-                      <button
-                        key={d}
-                        type="button"
-                        onClick={() => setDay(d)}
-                        className={`flex-1 rounded-lg py-2 text-xs font-medium transition-all ${
-                          day === d
-                            ? "bg-primary text-primary-foreground shadow-[var(--shadow-glow-cyan)]"
-                            : "text-muted-foreground hover:text-foreground"
-                        }`}
-                      >
-                        {d}
-                      </button>
-                    ))}
-                  </div>
+                  <Label>Schedule</Label>
+                  <DateTimePicker
+                    value={scheduledAt}
+                    onChange={setScheduledAt}
+                    className="mt-1.5"
+                  />
                 </div>
               </div>
 
@@ -152,7 +141,7 @@ function PredictPage() {
                 <Label>Format</Label>
                 <div className="mt-1.5 grid grid-cols-2 gap-2 sm:grid-cols-4">
                   {FORMATS.map((f) => {
-                    const active = format === f.id;
+                    const active = format_ === f.id;
                     return (
                       <button
                         key={f.id}
