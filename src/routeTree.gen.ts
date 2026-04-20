@@ -14,6 +14,7 @@ import { Route as ResultRouteImport } from './routes/result'
 import { Route as PredictRouteImport } from './routes/predict'
 import { Route as DiagnoseRouteImport } from './routes/diagnose'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as BatchRouteImport } from './routes/batch'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AbTestRouteImport } from './routes/ab-test'
@@ -44,6 +45,11 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CalendarRoute = CalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BatchRoute = BatchRouteImport.update({
   id: '/batch',
   path: '/batch',
@@ -70,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/ab-test': typeof AbTestRoute
   '/admin': typeof AdminRoute
   '/batch': typeof BatchRoute
+  '/calendar': typeof CalendarRoute
   '/dashboard': typeof DashboardRoute
   '/diagnose': typeof DiagnoseRoute
   '/predict': typeof PredictRoute
@@ -81,6 +88,7 @@ export interface FileRoutesByTo {
   '/ab-test': typeof AbTestRoute
   '/admin': typeof AdminRoute
   '/batch': typeof BatchRoute
+  '/calendar': typeof CalendarRoute
   '/dashboard': typeof DashboardRoute
   '/diagnose': typeof DiagnoseRoute
   '/predict': typeof PredictRoute
@@ -93,6 +101,7 @@ export interface FileRoutesById {
   '/ab-test': typeof AbTestRoute
   '/admin': typeof AdminRoute
   '/batch': typeof BatchRoute
+  '/calendar': typeof CalendarRoute
   '/dashboard': typeof DashboardRoute
   '/diagnose': typeof DiagnoseRoute
   '/predict': typeof PredictRoute
@@ -106,6 +115,7 @@ export interface FileRouteTypes {
     | '/ab-test'
     | '/admin'
     | '/batch'
+    | '/calendar'
     | '/dashboard'
     | '/diagnose'
     | '/predict'
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/ab-test'
     | '/admin'
     | '/batch'
+    | '/calendar'
     | '/dashboard'
     | '/diagnose'
     | '/predict'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/ab-test'
     | '/admin'
     | '/batch'
+    | '/calendar'
     | '/dashboard'
     | '/diagnose'
     | '/predict'
@@ -140,6 +152,7 @@ export interface RootRouteChildren {
   AbTestRoute: typeof AbTestRoute
   AdminRoute: typeof AdminRoute
   BatchRoute: typeof BatchRoute
+  CalendarRoute: typeof CalendarRoute
   DashboardRoute: typeof DashboardRoute
   DiagnoseRoute: typeof DiagnoseRoute
   PredictRoute: typeof PredictRoute
@@ -184,6 +197,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/calendar': {
+      id: '/calendar'
+      path: '/calendar'
+      fullPath: '/calendar'
+      preLoaderRoute: typeof CalendarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/batch': {
       id: '/batch'
       path: '/batch'
@@ -220,6 +240,7 @@ const rootRouteChildren: RootRouteChildren = {
   AbTestRoute: AbTestRoute,
   AdminRoute: AdminRoute,
   BatchRoute: BatchRoute,
+  CalendarRoute: CalendarRoute,
   DashboardRoute: DashboardRoute,
   DiagnoseRoute: DiagnoseRoute,
   PredictRoute: PredictRoute,
@@ -229,3 +250,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
