@@ -44,6 +44,61 @@ export const PERFORMANCE_DISTRIBUTION = [
   { tier: "Risky", count: 92, color: "var(--color-chart-5)" },
 ];
 
+// Posting performance heatmap: 7 days × 24 hours, value = avg engagement score
+export const HEATMAP_DATA: number[][] = (() => {
+  const days = 7;
+  const hours = 24;
+  const grid: number[][] = [];
+  for (let d = 0; d < days; d++) {
+    const row: number[] = [];
+    for (let h = 0; h < hours; h++) {
+      // Synthesize realistic posting peaks: morning (8-10), lunch (12-13), evening (18-22)
+      const morning = Math.exp(-Math.pow((h - 9) / 2.2, 2)) * 0.6;
+      const lunch = Math.exp(-Math.pow((h - 12.5) / 1.4, 2)) * 0.45;
+      const evening = Math.exp(-Math.pow((h - 20) / 2.5, 2)) * 0.95;
+      const weekendBoost = d >= 5 ? 0.15 : 0;
+      const noise = (Math.sin(d * 7.3 + h * 1.9) + 1) * 0.08;
+      const v = Math.min(1, morning + lunch + evening + weekendBoost + noise);
+      row.push(Math.round(v * 100) / 100);
+    }
+    grid.push(row);
+  }
+  return grid;
+})();
+
+export const HEATMAP_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+// Content calendar — scheduled posts for the current month
+export type CalendarEntry = {
+  id: string;
+  day: number; // day of month
+  account: string;
+  format: "Reels" | "Carousel" | "Story" | "Single image";
+  title: string;
+  tier: Tier;
+  time: string;
+};
+
+export const CALENDAR_ENTRIES: CalendarEntry[] = [
+  { id: "c1", day: 2, account: "@nova.studio", format: "Reels", title: "Spring drop teaser", tier: "Viral", time: "20:15" },
+  { id: "c2", day: 3, account: "@kindred.brand", format: "Carousel", title: "Founder story pt.2", tier: "Strong", time: "12:30" },
+  { id: "c3", day: 5, account: "@orbit.media", format: "Story", title: "BTS shoot day", tier: "Average", time: "09:00" },
+  { id: "c4", day: 7, account: "@nova.studio", format: "Reels", title: "Studio walkthrough", tier: "Strong", time: "19:45" },
+  { id: "c5", day: 8, account: "@halcyon.fm", format: "Single image", title: "Album artwork reveal", tier: "Viral", time: "18:00" },
+  { id: "c6", day: 10, account: "@solene.atelier", format: "Carousel", title: "Atelier lookbook", tier: "Strong", time: "11:00" },
+  { id: "c7", day: 12, account: "@kindred.brand", format: "Reels", title: "Customer feature", tier: "Average", time: "20:00" },
+  { id: "c8", day: 13, account: "@vector.goods", format: "Story", title: "Limited drop alert", tier: "Weak", time: "16:30" },
+  { id: "c9", day: 15, account: "@nova.studio", format: "Reels", title: "Behind the brand", tier: "Viral", time: "20:30" },
+  { id: "c10", day: 17, account: "@orbit.media", format: "Carousel", title: "Editorial recap", tier: "Strong", time: "13:15" },
+  { id: "c11", day: 18, account: "@halcyon.fm", format: "Reels", title: "Track teaser", tier: "Strong", time: "21:00" },
+  { id: "c12", day: 20, account: "@solene.atelier", format: "Single image", title: "Press feature", tier: "Average", time: "10:00" },
+  { id: "c13", day: 22, account: "@kindred.brand", format: "Carousel", title: "Sustainability report", tier: "Average", time: "14:00" },
+  { id: "c14", day: 23, account: "@nova.studio", format: "Reels", title: "Campaign launch", tier: "Viral", time: "19:30" },
+  { id: "c15", day: 25, account: "@vector.goods", format: "Story", title: "Restock teaser", tier: "Strong", time: "17:00" },
+  { id: "c16", day: 27, account: "@orbit.media", format: "Reels", title: "Founder Q&A", tier: "Strong", time: "20:00" },
+  { id: "c17", day: 28, account: "@halcyon.fm", format: "Carousel", title: "Tour dates", tier: "Average", time: "12:00" },
+];
+
 export const USAGE_TREND = Array.from({ length: 30 }, (_, i) => {
   const seed = Math.sin(i * 1.7) * 0.5 + 0.5;
   return {
@@ -175,32 +230,32 @@ export type Tier = "Viral" | "Strong" | "Average" | "Weak" | "Risky";
 export const TIER_META: Record<Tier, { label: string; color: string; bg: string; ring: string }> = {
   Viral: {
     label: "Viral",
-    color: "text-[oklch(0.92_0.18_198)]",
-    bg: "bg-[color-mix(in_oklab,var(--primary)_18%,transparent)]",
-    ring: "ring-[color-mix(in_oklab,var(--primary)_45%,transparent)]",
+    color: "text-[oklch(0.45_0.20_295)]",
+    bg: "bg-[color-mix(in_oklab,var(--primary)_14%,transparent)]",
+    ring: "ring-[color-mix(in_oklab,var(--primary)_35%,transparent)]",
   },
   Strong: {
     label: "Strong",
-    color: "text-[oklch(0.85_0.20_295)]",
-    bg: "bg-[color-mix(in_oklab,var(--secondary-glow)_18%,transparent)]",
-    ring: "ring-[color-mix(in_oklab,var(--secondary-glow)_45%,transparent)]",
+    color: "text-[oklch(0.40_0.18_130)]",
+    bg: "bg-[color-mix(in_oklab,var(--accent-lime)_22%,transparent)]",
+    ring: "ring-[color-mix(in_oklab,var(--accent-lime)_45%,transparent)]",
   },
   Average: {
     label: "Average",
-    color: "text-[oklch(0.88_0.18_155)]",
-    bg: "bg-[color-mix(in_oklab,var(--success)_15%,transparent)]",
-    ring: "ring-[color-mix(in_oklab,var(--success)_40%,transparent)]",
+    color: "text-[oklch(0.40_0.10_230)]",
+    bg: "bg-[color-mix(in_oklab,var(--chart-3)_15%,transparent)]",
+    ring: "ring-[color-mix(in_oklab,var(--chart-3)_35%,transparent)]",
   },
   Weak: {
     label: "Weak",
-    color: "text-[oklch(0.88_0.16_75)]",
-    bg: "bg-[color-mix(in_oklab,var(--warning)_15%,transparent)]",
+    color: "text-[oklch(0.45_0.14_75)]",
+    bg: "bg-[color-mix(in_oklab,var(--warning)_18%,transparent)]",
     ring: "ring-[color-mix(in_oklab,var(--warning)_40%,transparent)]",
   },
   Risky: {
     label: "Risky",
-    color: "text-[oklch(0.80_0.22_22)]",
-    bg: "bg-[color-mix(in_oklab,var(--destructive)_15%,transparent)]",
-    ring: "ring-[color-mix(in_oklab,var(--destructive)_40%,transparent)]",
+    color: "text-[oklch(0.48_0.20_22)]",
+    bg: "bg-[color-mix(in_oklab,var(--destructive)_14%,transparent)]",
+    ring: "ring-[color-mix(in_oklab,var(--destructive)_35%,transparent)]",
   },
 };
