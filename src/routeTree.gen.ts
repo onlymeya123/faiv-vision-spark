@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SuggestRouteImport } from './routes/suggest'
 import { Route as ResultRouteImport } from './routes/result'
 import { Route as PredictRouteImport } from './routes/predict'
+import { Route as DiagnoseRouteImport } from './routes/diagnose'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as BatchRouteImport } from './routes/batch'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -31,6 +32,11 @@ const ResultRoute = ResultRouteImport.update({
 const PredictRoute = PredictRouteImport.update({
   id: '/predict',
   path: '/predict',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiagnoseRoute = DiagnoseRouteImport.update({
+  id: '/diagnose',
+  path: '/diagnose',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/batch': typeof BatchRoute
   '/dashboard': typeof DashboardRoute
+  '/diagnose': typeof DiagnoseRoute
   '/predict': typeof PredictRoute
   '/result': typeof ResultRoute
   '/suggest': typeof SuggestRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/batch': typeof BatchRoute
   '/dashboard': typeof DashboardRoute
+  '/diagnose': typeof DiagnoseRoute
   '/predict': typeof PredictRoute
   '/result': typeof ResultRoute
   '/suggest': typeof SuggestRoute
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/batch': typeof BatchRoute
   '/dashboard': typeof DashboardRoute
+  '/diagnose': typeof DiagnoseRoute
   '/predict': typeof PredictRoute
   '/result': typeof ResultRoute
   '/suggest': typeof SuggestRoute
@@ -98,6 +107,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/batch'
     | '/dashboard'
+    | '/diagnose'
     | '/predict'
     | '/result'
     | '/suggest'
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/batch'
     | '/dashboard'
+    | '/diagnose'
     | '/predict'
     | '/result'
     | '/suggest'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/batch'
     | '/dashboard'
+    | '/diagnose'
     | '/predict'
     | '/result'
     | '/suggest'
@@ -129,6 +141,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   BatchRoute: typeof BatchRoute
   DashboardRoute: typeof DashboardRoute
+  DiagnoseRoute: typeof DiagnoseRoute
   PredictRoute: typeof PredictRoute
   ResultRoute: typeof ResultRoute
   SuggestRoute: typeof SuggestRoute
@@ -155,6 +168,13 @@ declare module '@tanstack/react-router' {
       path: '/predict'
       fullPath: '/predict'
       preLoaderRoute: typeof PredictRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/diagnose': {
+      id: '/diagnose'
+      path: '/diagnose'
+      fullPath: '/diagnose'
+      preLoaderRoute: typeof DiagnoseRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -201,6 +221,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   BatchRoute: BatchRoute,
   DashboardRoute: DashboardRoute,
+  DiagnoseRoute: DiagnoseRoute,
   PredictRoute: PredictRoute,
   ResultRoute: ResultRoute,
   SuggestRoute: SuggestRoute,
