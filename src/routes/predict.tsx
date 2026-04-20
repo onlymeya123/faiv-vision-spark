@@ -3,17 +3,23 @@ import { useState, useMemo } from "react";
 import { AppShell } from "@/components/AppShell";
 import { SectionHeader } from "@/components/SectionHeader";
 import { DateTimePicker } from "@/components/DateTimePicker";
+import { FlowStepper } from "@/components/FlowStepper";
+import { ModelMaturity, getMaturityState } from "@/components/ModelMaturity";
+import {
+  analyzeCaption,
+  CaptionMeter,
+  CaptionSignals,
+  CaptionLimitWarning,
+  CAPTION_MAX,
+} from "@/components/CaptionIntel";
 import { format } from "date-fns";
+import { motion } from "framer-motion";
 import {
   Sparkles,
-  Hash,
   Target as TargetIcon,
   Image as ImageIcon,
   Film,
   LayoutGrid,
-  AlertCircle,
-  CheckCircle2,
-  Loader2,
 } from "lucide-react";
 
 export const Route = createFileRoute("/predict")({
@@ -33,15 +39,20 @@ const FORMATS = [
   { id: "story", label: "Story", icon: Sparkles, hint: "24h ephemeral" },
 ] as const;
 
-const ACCOUNTS = ["@nova.studio", "@kindred.brand", "@orbit.media", "@solene.atelier"];
-const MAX_CHARS = 2200;
+const ACCOUNTS: { handle: string; samples: number }[] = [
+  { handle: "@nova.studio", samples: 247 },
+  { handle: "@kindred.brand", samples: 124 },
+  { handle: "@orbit.media", samples: 38 },
+  { handle: "@solene.atelier", samples: 192 },
+];
 
 function PredictPage() {
   const navigate = useNavigate();
-  const [account, setAccount] = useState(ACCOUNTS[0]);
+  const [accountIdx, setAccountIdx] = useState(0);
+  const account = ACCOUNTS[accountIdx];
+  const maturityState = getMaturityState(account.samples);
   const [format_, setFormat] = useState<string>("reels");
 
-  // Single timestamp drives both date and time — Apple-like, no manual input
   const [scheduledAt, setScheduledAt] = useState<Date>(() => {
     const d = new Date();
     d.setDate(d.getDate() + 1);
@@ -52,64 +63,48 @@ function PredictPage() {
   const timeLabel = format(scheduledAt, "HH:mm");
 
   const [caption, setCaption] = useState(
-    "Behind every drop is a 4am sketch. Here's the unfiltered story of how we built our spring capsule — from late nights to first ship. Save this if you've ever doubted a 2am idea. ✨\n\nWhat's the one project that almost didn't make it?"
+    "Behind every drop is a 4am sketch. Here's the unfiltered story of how we built our spring capsule — from late nights to first ship. Save this if you've ever doubted a 2am idea. ✨\n\nWhat's the one project that almost didn't make it?",
   );
   const [submitting, setSubmitting] = useState(false);
 
-  const intel = useMemo(() => {
-    const text = caption;
-    const words = text.trim().split(/\s+/).filter(Boolean);
-    const hashtags = (text.match(/#[\w]+/g) || []);
-    const mentions = (text.match(/@[\w.]+/g) || []);
-    const ctaPatterns = /\b(save|share|follow|tag|comment|click|link|swipe|tap|drop|grab|join|sign|book|shop|read more|learn more|discover|don'?t miss|what'?s|tell me|let me know)\b/i;
-    const hasCTA = ctaPatterns.test(text);
-    const hasQuestion = /\?/.test(text);
-    const emojiCount = (text.match(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu) || []).length;
-    const charCount = text.length;
-    const tooLong = charCount > MAX_CHARS;
-    const tooShort = charCount < 40;
-    const hookWords = words.slice(0, 8).join(" ");
+  const stats = useMemo(() => analyzeCaption(caption), [caption]);
+  const tooLong = stats.charCount > CAPTION_MAX;
+  const tooShort = stats.charCount < 40;
 
-    let score = 50;
-    if (charCount >= 80 && charCount <= 1200) score += 12;
-    if (hasCTA) score += 10;
-    if (hasQuestion) score += 6;
-    if (hashtags.length >= 3 && hashtags.length <= 8) score += 8;
-    if (emojiCount >= 1 && emojiCount <= 4) score += 4;
-    if (tooLong || tooShort) score -= 15;
-    score = Math.max(20, Math.min(98, score));
-
-    return {
-      charCount,
-      wordCount: words.length,
-      hashtags,
-      mentions,
-      hasCTA,
-      hasQuestion,
-      emojiCount,
-      tooLong,
-      tooShort,
-      hookWords,
-      score,
-    };
-  }, [caption]);
+  const score = useMemo(() => {
+    let s = 50;
+    if (stats.charCount >= 80 && stats.charCount <= 1200) s += 12;
+    if (stats.hasCTA) s += 10;
+    if (stats.hasQuestion) s += 6;
+    if (stats.hashtags.length >= 3 && stats.hashtags.length <= 8) s += 8;
+    if (stats.emojiCount >= 1 && stats.emojiCount <= 4) s += 4;
+    if (tooLong || tooShort) s -= 15;
+    // Cold start drag — less personal data → less confidence in upper range
+    if (maturityState === "low") s -= 6;
+    if (maturityState === "learning") s -= 2;
+    return Math.max(20, Math.min(98, s));
+  }, [stats, tooLong, tooShort, maturityState]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    setTimeout(() => navigate({ to: "/result" }), 1100);
+    setTimeout(() => navigate({ to: "/result" }), 900);
   };
 
   return (
     <AppShell>
       <div className="px-5 py-8 md:px-10 md:py-10">
+        <div className="mb-6">
+          <FlowStepper />
+        </div>
+
         <SectionHeader
           eyebrow="New prediction"
           title="Compose & forecast"
           description="We'll score this post across audience fit, hook strength, posting window, and historical patterns."
         />
 
-        <form onSubmit={handleSubmit} className="mt-10 grid gap-6 lg:grid-cols-[1.6fr_1fr]">
+        <form onSubmit={handleSubmit} className="mt-8 grid gap-6 lg:grid-cols-[1.6fr_1fr]">
           {/* MAIN COLUMN */}
           <div className="space-y-6">
             {/* Account + format */}
@@ -118,12 +113,14 @@ function PredictPage() {
                 <div>
                   <Label>Brand account</Label>
                   <select
-                    value={account}
-                    onChange={(e) => setAccount(e.target.value)}
+                    value={account.handle}
+                    onChange={(e) =>
+                      setAccountIdx(ACCOUNTS.findIndex((a) => a.handle === e.target.value))
+                    }
                     className="mt-1.5 h-12 w-full rounded-xl border border-border bg-surface/60 px-4 text-sm outline-none transition-all focus:border-ring focus:shadow-[0_0_0_4px_color-mix(in_oklab,var(--ring)_20%,transparent)]"
                   >
                     {ACCOUNTS.map((a) => (
-                      <option key={a}>{a}</option>
+                      <option key={a.handle}>{a.handle}</option>
                     ))}
                   </select>
                 </div>
@@ -149,7 +146,7 @@ function PredictPage() {
                         onClick={() => setFormat(f.id)}
                         className={`group relative overflow-hidden rounded-xl border p-4 text-left transition-all ${
                           active
-                            ? "border-primary bg-[color-mix(in_oklab,var(--primary)_10%,transparent)] shadow-[var(--shadow-glow-cyan)]"
+                            ? "border-primary bg-[color-mix(in_oklab,var(--primary)_10%,transparent)] shadow-[var(--shadow-glow-purple)]"
                             : "border-border bg-surface/60 hover:border-border-strong"
                         }`}
                       >
@@ -172,105 +169,72 @@ function PredictPage() {
               title="Caption intelligence"
               subtitle="Live analysis of hook, length, CTAs and hashtags."
             >
-              <Label>Caption</Label>
+              <div className="flex items-center justify-between">
+                <Label>Caption</Label>
+                <CaptionMeter count={stats.charCount} />
+              </div>
               <div className="mt-1.5 rounded-xl border border-border bg-surface/60 transition-all focus-within:border-ring focus-within:shadow-[0_0_0_4px_color-mix(in_oklab,var(--ring)_20%,transparent)]">
                 <textarea
                   value={caption}
                   onChange={(e) => setCaption(e.target.value)}
                   rows={9}
+                  maxLength={CAPTION_MAX + 200} /* allow over-typing to surface warning */
                   className="w-full resize-none bg-transparent p-4 text-sm leading-relaxed outline-none placeholder:text-muted-foreground/60"
                   placeholder="Write your caption…"
                 />
-                <div className="flex items-center justify-between border-t border-border px-4 py-2.5 text-xs">
-                  <div className="flex items-center gap-3 text-muted-foreground">
-                    <span className="font-mono">
-                      {intel.wordCount} words · {intel.hashtags.length} #
-                    </span>
-                    {intel.hasCTA && (
-                      <span className="inline-flex items-center gap-1 text-[oklch(0.85_0.18_155)]">
-                        <CheckCircle2 className="h-3 w-3" /> CTA detected
-                      </span>
-                    )}
-                    {intel.hasQuestion && (
-                      <span className="inline-flex items-center gap-1 text-primary">
-                        <CheckCircle2 className="h-3 w-3" /> Question
-                      </span>
-                    )}
+                <div className="border-t border-border px-4 py-3">
+                  <CaptionSignals stats={stats} />
+                </div>
+              </div>
+
+              <CaptionLimitWarning count={stats.charCount} />
+
+              {/* Hook preview + hashtag chips */}
+              <div className="mt-5 grid gap-3 md:grid-cols-[1.4fr_1fr]">
+                <div className="rounded-xl border border-border-strong bg-gradient-to-br from-surface-2 to-surface p-4">
+                  <div className="mb-1.5 text-[10px] uppercase tracking-[0.2em] text-primary">
+                    First-3-second hook
                   </div>
-                  <div
-                    className={`font-mono font-medium ${
-                      intel.tooLong
-                        ? "text-destructive"
-                        : intel.charCount > MAX_CHARS * 0.85
-                        ? "text-[oklch(0.82_0.16_75)]"
-                        : "text-muted-foreground"
-                    }`}
-                  >
-                    {intel.charCount}/{MAX_CHARS}
+                  <div className="font-display text-base font-semibold leading-snug">
+                    "{stats.hookWords || "Add a strong opening line…"}…"
                   </div>
+                  {tooShort && (
+                    <p className="mt-2 inline-flex items-center gap-1.5 text-[11px] text-[oklch(0.50_0.16_75)] dark:text-[oklch(0.85_0.16_75)]">
+                      <TargetIcon className="h-3 w-3" />
+                      Caption is short — add context to anchor the hook.
+                    </p>
+                  )}
+                </div>
+                <div className="rounded-xl border border-border bg-surface/40 p-4">
+                  <div className="mb-2 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                    Hashtags · {stats.hashtags.length}
+                  </div>
+                  {stats.hashtags.length > 0 ? (
+                    <div className="flex flex-wrap gap-1.5">
+                      {stats.hashtags.map((h) => (
+                        <span
+                          key={h}
+                          className="rounded-md border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] text-primary"
+                        >
+                          {h}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-[11px] text-muted-foreground">
+                      Add 3–8 niche hashtags to improve discovery.
+                    </p>
+                  )}
                 </div>
               </div>
-
-              {/* Validation chips */}
-              <div className="mt-4 flex flex-wrap gap-2">
-                {intel.tooShort && (
-                  <Chip tone="warning" icon={<AlertCircle className="h-3 w-3" />}>
-                    Caption is short — consider adding context
-                  </Chip>
-                )}
-                {intel.tooLong && (
-                  <Chip tone="danger" icon={<AlertCircle className="h-3 w-3" />}>
-                    Exceeds Instagram's 2,200 character limit
-                  </Chip>
-                )}
-                {!intel.hasCTA && !intel.tooShort && (
-                  <Chip tone="info" icon={<TargetIcon className="h-3 w-3" />}>
-                    No CTA detected — try inviting a save or comment
-                  </Chip>
-                )}
-                {intel.hashtags.length === 0 && (
-                  <Chip tone="info" icon={<Hash className="h-3 w-3" />}>
-                    Add 3–8 niche hashtags to improve discovery
-                  </Chip>
-                )}
-                {intel.hashtags.length > 10 && (
-                  <Chip tone="warning" icon={<Hash className="h-3 w-3" />}>
-                    Too many hashtags — risks looking spammy
-                  </Chip>
-                )}
-                {intel.emojiCount === 0 && (
-                  <Chip tone="info">No emoji — adds warmth in this brand voice</Chip>
-                )}
-              </div>
-
-              {/* Hook preview */}
-              <div className="mt-5 rounded-xl border border-border-strong bg-gradient-to-br from-surface-2 to-surface p-4">
-                <div className="mb-1.5 text-[10px] uppercase tracking-[0.2em] text-primary">
-                  First-3-second hook
-                </div>
-                <div className="font-display text-lg font-semibold leading-snug">
-                  "{intel.hookWords}…"
-                </div>
-              </div>
-
-              {/* Hashtag chips */}
-              {intel.hashtags.length > 0 && (
-                <div className="mt-4 flex flex-wrap gap-1.5">
-                  {intel.hashtags.map((h) => (
-                    <span
-                      key={h}
-                      className="rounded-md border border-border bg-surface-2 px-2 py-1 font-mono text-[11px] text-primary"
-                    >
-                      {h}
-                    </span>
-                  ))}
-                </div>
-              )}
             </Panel>
           </div>
 
           {/* SIDE COLUMN */}
           <div className="space-y-6">
+            {/* Cold-start awareness */}
+            <ModelMaturity samples={account.samples} />
+
             <Panel title="Posting window" subtitle="When this goes live.">
               <Label>Scheduled for</Label>
               <DateTimePicker
@@ -279,7 +243,7 @@ function PredictPage() {
                 className="mt-1.5"
               />
               <div className="mt-3 rounded-lg bg-surface-2 p-3 text-xs leading-relaxed text-muted-foreground">
-                <span className="font-medium text-primary">Tip:</span> Audience for {account}{" "}
+                <span className="font-medium text-primary">Tip:</span> Audience for {account.handle}{" "}
                 peaks <span className="font-mono text-foreground">20:15</span> on {day}s.
                 Window <span className="font-mono text-foreground">{timeLabel}</span> sits in the second-best slot.
               </div>
@@ -294,38 +258,49 @@ function PredictPage() {
                   Pre-flight score
                 </div>
                 <div className="mt-2 flex items-end gap-2">
-                  <div className="font-display text-5xl font-semibold tracking-tight text-gradient-primary">
-                    {intel.score}
-                  </div>
+                  <motion.div
+                    key={score}
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.18 }}
+                    className="font-display text-5xl font-semibold tracking-tight text-gradient-primary"
+                  >
+                    {score}
+                  </motion.div>
                   <div className="pb-2 text-sm text-muted-foreground">/100</div>
                 </div>
                 <div className="mt-4 h-2 overflow-hidden rounded-full bg-surface-3">
-                  <div
-                    className="h-full rounded-full transition-all duration-700"
+                  <motion.div
+                    className="h-full rounded-full"
+                    initial={false}
+                    animate={{ width: `${score}%` }}
+                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                     style={{
-                      width: `${intel.score}%`,
                       background: "var(--gradient-primary)",
-                      boxShadow: "var(--shadow-glow-cyan)",
+                      boxShadow: "var(--shadow-glow-purple)",
                     }}
                   />
                 </div>
                 <div className="mt-4 grid grid-cols-3 gap-2 text-center text-[10px]">
-                  <Stat label="Hook" v={Math.min(99, intel.score + 4)} />
-                  <Stat label="Format" v={Math.max(20, intel.score - 6)} />
-                  <Stat label="Timing" v={Math.min(95, intel.score + 1)} />
+                  <Stat label="Hook" v={Math.min(99, score + 4)} />
+                  <Stat label="Format" v={Math.max(20, score - 6)} />
+                  <Stat label="Timing" v={Math.min(95, score + 1)} />
                 </div>
               </div>
 
               <button
                 type="submit"
-                disabled={submitting || intel.tooLong}
-                className="mt-4 group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-primary px-5 py-3.5 text-sm font-semibold text-primary-foreground transition-all hover:shadow-[var(--shadow-glow-cyan)] disabled:opacity-60"
+                disabled={submitting || tooLong}
+                className="mt-4 group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-primary px-5 py-3.5 text-sm font-semibold text-primary-foreground transition-all hover:shadow-[var(--shadow-glow-purple)] disabled:opacity-60"
               >
                 {submitting ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Running 6 models…
-                  </>
+                  <span className="inline-flex items-center gap-2">
+                    <span className="relative flex h-2 w-2">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary-foreground/70" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-primary-foreground" />
+                    </span>
+                    Running hierarchical Random Forest…
+                  </span>
                 ) : (
                   <>
                     <Sparkles className="h-4 w-4" />
@@ -333,6 +308,9 @@ function PredictPage() {
                   </>
                 )}
               </button>
+              <p className="mt-2 text-center text-[10px] text-muted-foreground">
+                Niche → Account → Personal stages run in sequence
+              </p>
             </Panel>
           </div>
         </form>
@@ -366,32 +344,6 @@ function Label({ children }: { children: React.ReactNode }) {
     <div className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
       {children}
     </div>
-  );
-}
-
-function Chip({
-  children,
-  icon,
-  tone = "info",
-}: {
-  children: React.ReactNode;
-  icon?: React.ReactNode;
-  tone?: "info" | "warning" | "danger";
-}) {
-  const styles = {
-    info: "border-border bg-surface-2 text-muted-foreground",
-    warning:
-      "border-[color-mix(in_oklab,var(--warning)_30%,transparent)] bg-[color-mix(in_oklab,var(--warning)_12%,transparent)] text-[oklch(0.85_0.16_75)]",
-    danger:
-      "border-[color-mix(in_oklab,var(--destructive)_30%,transparent)] bg-[color-mix(in_oklab,var(--destructive)_12%,transparent)] text-[oklch(0.80_0.22_22)]",
-  };
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] ${styles[tone]}`}
-    >
-      {icon}
-      {children}
-    </span>
   );
 }
 
