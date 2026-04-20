@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { AppShell } from "@/components/AppShell";
 import { SectionHeader } from "@/components/SectionHeader";
 import { TierBadge } from "@/components/TierBadge";
+import { FlowStepper } from "@/components/FlowStepper";
 import { SUGGESTIONS } from "@/lib/mock-data";
 import { Sparkles, ArrowRight, Check, X, Undo2 } from "lucide-react";
 import type { Tier } from "@/lib/mock-data";
@@ -70,6 +71,9 @@ function SuggestPage() {
   return (
     <AppShell>
       <div className="px-5 py-8 md:px-10 md:py-10">
+        <div className="mb-6">
+          <FlowStepper />
+        </div>
         <SectionHeader
           eyebrow="AI suggestions"
           title="Make this post stronger"
