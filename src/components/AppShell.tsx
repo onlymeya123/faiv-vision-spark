@@ -10,14 +10,12 @@ import {
   Bell,
   Sun,
   Moon,
-  CalendarDays,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/predict", label: "Predict", icon: Sparkles },
-  { to: "/calendar", label: "Calendar", icon: CalendarDays },
   { to: "/diagnose", label: "Diagnose", icon: Activity },
   { to: "/suggest", label: "Suggest", icon: Lightbulb },
   { to: "/admin", label: "Admin", icon: Shield },
@@ -70,7 +68,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 FAIV<span className="text-primary"> Predict</span>
               </div>
               <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-                Performance OS
+                Hierarchical RF
               </div>
             </div>
           </div>
@@ -122,10 +120,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
               </span>
-              <div className="text-xs font-medium">Models live</div>
+              <div className="text-xs font-medium">Inference online</div>
             </div>
             <div className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-              6 production models · canary v0.9
+              FastAPI · 5 active models
             </div>
           </div>
         </aside>

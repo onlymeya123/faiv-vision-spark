@@ -69,22 +69,22 @@ function LoginPage() {
               Trained on 4.2M agency posts
             </div>
             <h1 className="font-display text-5xl font-semibold leading-[1.05] tracking-tight">
-              Predict performance{" "}
+              Classify your post{" "}
               <span className="text-gradient-primary">before</span>
               <br />
               you ever hit publish.
             </h1>
             <p className="text-base leading-relaxed text-muted-foreground">
-              FAIV Predict runs every caption, format, and posting time through six
-              specialized models — surfacing the changes that move a post from average
-              to viral.
+              FAIV Predict runs every post through a hierarchical Random Forest — Personal Model
+              for mature accounts, Niche fallback otherwise — returning a tier (HIGH / AVERAGE /
+              LOW) with a confidence score.
             </p>
 
             <div className="grid grid-cols-3 gap-4 pt-4">
               {[
-                { v: "94%", l: "Median accuracy" },
+                { v: "83.2%", l: "30d Accuracy" },
                 { v: "<400ms", l: "Inference time" },
-                { v: "+31%", l: "Avg. lift" },
+                { v: "3 tiers", l: "HIGH · AVG · LOW" },
               ].map((s) => (
                 <div
                   key={s.l}

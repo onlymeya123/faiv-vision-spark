@@ -14,7 +14,6 @@ import { Route as ResultRouteImport } from './routes/result'
 import { Route as PredictRouteImport } from './routes/predict'
 import { Route as DiagnoseRouteImport } from './routes/diagnose'
 import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -43,11 +42,6 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CalendarRoute = CalendarRouteImport.update({
-  id: '/calendar',
-  path: '/calendar',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -62,7 +56,6 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
-  '/calendar': typeof CalendarRoute
   '/dashboard': typeof DashboardRoute
   '/diagnose': typeof DiagnoseRoute
   '/predict': typeof PredictRoute
@@ -72,7 +65,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
-  '/calendar': typeof CalendarRoute
   '/dashboard': typeof DashboardRoute
   '/diagnose': typeof DiagnoseRoute
   '/predict': typeof PredictRoute
@@ -83,7 +75,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
-  '/calendar': typeof CalendarRoute
   '/dashboard': typeof DashboardRoute
   '/diagnose': typeof DiagnoseRoute
   '/predict': typeof PredictRoute
@@ -95,7 +86,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
-    | '/calendar'
     | '/dashboard'
     | '/diagnose'
     | '/predict'
@@ -105,7 +95,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
-    | '/calendar'
     | '/dashboard'
     | '/diagnose'
     | '/predict'
@@ -115,7 +104,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
-    | '/calendar'
     | '/dashboard'
     | '/diagnose'
     | '/predict'
@@ -126,7 +114,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
-  CalendarRoute: typeof CalendarRoute
   DashboardRoute: typeof DashboardRoute
   DiagnoseRoute: typeof DiagnoseRoute
   PredictRoute: typeof PredictRoute
@@ -171,13 +158,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/calendar': {
-      id: '/calendar'
-      path: '/calendar'
-      fullPath: '/calendar'
-      preLoaderRoute: typeof CalendarRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -198,7 +178,6 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
-  CalendarRoute: CalendarRoute,
   DashboardRoute: DashboardRoute,
   DiagnoseRoute: DiagnoseRoute,
   PredictRoute: PredictRoute,
@@ -208,3 +187,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

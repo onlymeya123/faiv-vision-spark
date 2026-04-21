@@ -1,72 +1,44 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState, useEffect, useRef } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AppShell } from "@/components/AppShell";
 import { SectionHeader } from "@/components/SectionHeader";
-import { TierBadge } from "@/components/TierBadge";
 import { FlowStepper } from "@/components/FlowStepper";
 import { SUGGESTIONS } from "@/lib/mock-data";
-import { Sparkles, ArrowRight, Check, X, Undo2 } from "lucide-react";
-import type { Tier } from "@/lib/mock-data";
+import { Sparkles, ArrowRight, AlertTriangle, ServerCrash, Wand2 } from "lucide-react";
 
 export const Route = createFileRoute("/suggest")({
   head: () => ({
     meta: [
-      { title: "Suggestions — FAIV Predict" },
-      { name: "description", content: "AI-driven recommendations with projected lift and tier shift." },
+      { title: "Recommendations — FAIV Predict" },
+      { name: "description", content: "Hybrid recommendations: instant local TRE templates, optionally enriched by AI (Gemini)." },
     ],
   }),
   component: SuggestPage,
 });
 
-const TIER_ORDER: Tier[] = ["Risky", "Weak", "Average", "Strong", "Viral"];
-
-// Parse "+14% reach" → 14
-function parseLift(s: string): number {
-  const m = s.match(/-?\d+(\.\d+)?/);
-  return m ? parseFloat(m[0]) : 0;
-}
+type AiState = "idle" | "loading" | "enriched" | "fallback";
 
 function SuggestPage() {
-  const [applied, setApplied] = useState<Record<string, boolean>>({});
-  const [dismissed, setDismissed] = useState<Record<string, boolean>>({});
+  const [aiState, setAiState] = useState<AiState>("idle");
+  const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
 
-  const totals = useMemo(() => {
-    const ids = Object.keys(applied).filter((id) => applied[id]);
-    const lift = ids.reduce((sum, id) => {
-      const s = SUGGESTIONS.find((x) => x.id === id);
-      return sum + (s ? parseLift(s.projection) : 0);
-    }, 0);
-
-    // Resolve final tier from highest applied target
-    const baseTier: Tier = "Strong";
-    let finalTierIdx = TIER_ORDER.indexOf(baseTier);
-    ids.forEach((id) => {
-      const s = SUGGESTIONS.find((x) => x.id === id);
-      if (s?.tierShift) {
-        const toIdx = TIER_ORDER.indexOf(s.tierShift.to as Tier);
-        if (toIdx > finalTierIdx) finalTierIdx = toIdx;
-      }
-    });
-    const finalTier = TIER_ORDER[finalTierIdx];
-
-    const totalAvailable = SUGGESTIONS.length;
-    const appliedCount = ids.length;
-    const confidence = 88 + Math.min(8, appliedCount * 2);
-
-    return { lift, finalTier, baseTier, appliedCount, totalAvailable, confidence };
-  }, [applied]);
-
-  const allApplied = totals.appliedCount === SUGGESTIONS.length;
-
-  const applyAll = () => {
-    const next: Record<string, boolean> = {};
-    SUGGESTIONS.forEach((s) => (next[s.id] = true));
-    setApplied(next);
-    setDismissed({});
+  const enrichWithAI = async () => {
+    setAiState("loading");
+    // Simulated Gemini call — randomly succeed or fall back to TRE.
+    await new Promise((r) => setTimeout(r, 1100));
+    const ok = Math.random() > 0.25;
+    if (ok) {
+      setAiSuggestions([
+        "Open the caption with a one-line outcome statement followed by the back-story.",
+        "Pair the save-CTA with a question to widen comment-driven reach.",
+        "Cluster hashtags by intent: 3 niche + 2 community + 1 branded.",
+      ]);
+      setAiState("enriched");
+    } else {
+      setAiState("fallback");
+    }
   };
-
-  const reset = () => setApplied({});
 
   return (
     <AppShell>
@@ -75,252 +47,146 @@ function SuggestPage() {
           <FlowStepper />
         </div>
         <SectionHeader
-          eyebrow="AI suggestions"
-          title="Make this post stronger"
-          description="Each suggestion is ranked by predicted lift. Apply to update the projection live."
+          eyebrow="Recommendations"
+          title="TRE templates · optionally enriched by AI"
+          description="Default suggestions come instantly from the local Template Recommendation Engine. Enrich with AI to layer Gemini-generated context (auto-falls back to TRE on error)."
           actions={
-            <div className="flex items-center gap-2">
-              {totals.appliedCount > 0 && (
-                <button
-                  onClick={reset}
-                  className="inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground"
-                >
-                  <Undo2 className="h-3.5 w-3.5" />
-                  Reset
-                </button>
-              )}
-              <button className="inline-flex items-center gap-2 rounded-xl border border-border-strong bg-surface/60 px-4 py-2 text-sm font-medium backdrop-blur hover:bg-surface-2">
-                <Sparkles className="h-4 w-4 text-primary" />
-                Re-generate
-              </button>
-            </div>
-          }
-        />
-
-        {/* Composite lift hero — borderless gradient panel, no card */}
-        <div className="relative mt-8 overflow-hidden rounded-3xl bg-gradient-to-br from-surface-2 via-surface to-surface p-6 md:p-10 shadow-[var(--shadow-elevated)]">
-          <div
-            aria-hidden
-            className="absolute -top-24 -right-24 h-[340px] w-[340px] rounded-full"
-            style={{
-              background:
-                "radial-gradient(circle, color-mix(in oklab, var(--primary-glow) 55%, transparent), transparent 70%)",
-              filter: "blur(80px)",
-            }}
-          />
-          <div className="relative grid gap-8 md:grid-cols-[1fr_auto] md:items-center">
-            <div>
-              <div className="text-[11px] uppercase tracking-[0.2em] text-primary">
-                {totals.appliedCount === 0
-                  ? "Apply suggestions to see lift"
-                  : allApplied
-                  ? "All 4 suggestions applied"
-                  : `${totals.appliedCount} of ${totals.totalAvailable} applied`}
-              </div>
-              <div className="mt-3 flex items-baseline gap-3">
-                <h2 className="font-display text-4xl font-semibold tracking-tight md:text-6xl">
-                  Projected lift
-                </h2>
-                <AnimatedNumber value={totals.lift} />
-              </div>
-              <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
-                Tier{" "}
-                <AnimatePresence mode="wait">
-                  <motion.span
-                    key={totals.baseTier}
-                    initial={{ opacity: 0, y: 4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -4 }}
-                    transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                    className="inline-block"
-                  >
-                    <TierBadge tier={totals.baseTier} className="mx-1" />
-                  </motion.span>
-                </AnimatePresence>
-                <ArrowRight className="mx-1 inline h-3.5 w-3.5 -translate-y-0.5 text-muted-foreground" />
-                <AnimatePresence mode="wait">
-                  <motion.span
-                    key={totals.finalTier}
-                    initial={{ opacity: 0, y: 4, scale: 0.96 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -4, scale: 0.96 }}
-                    transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                    className="inline-block"
-                  >
-                    <TierBadge tier={totals.finalTier} className="mx-1" />
-                  </motion.span>
-                </AnimatePresence>
-                with{" "}
-                <span className="font-mono tabular-nums text-foreground">{totals.confidence}%</span>{" "}
-                model confidence.
-              </p>
-            </div>
             <button
-              onClick={applyAll}
-              disabled={allApplied}
-              className="group inline-flex items-center justify-center gap-2 self-start rounded-2xl bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow-purple)] hover:scale-[1.02] disabled:scale-100 disabled:opacity-60 md:self-center"
+              type="button"
+              onClick={enrichWithAI}
+              disabled={aiState === "loading"}
+              className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow-purple)] transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60"
             >
-              {allApplied ? (
+              {aiState === "loading" ? (
                 <>
-                  <Check className="h-4 w-4" />
-                  All applied
+                  <Sparkles className="h-4 w-4 animate-pulse" />
+                  Memanggil Gemini…
                 </>
               ) : (
                 <>
-                  Apply all
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  <Wand2 className="h-4 w-4" />
+                  Perkaya dengan AI
                 </>
               )}
             </button>
-          </div>
-        </div>
+          }
+        />
 
-        {/* Suggestions */}
-        <section className="mt-8 grid gap-4 md:grid-cols-2">
-          {SUGGESTIONS.map((s, i) => {
-            const isApplied = !!applied[s.id];
-            const isDismissed = !!dismissed[s.id];
-            return (
+        {/* TRE local suggestions — always visible, instant */}
+        <section className="mt-8">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="rounded-full bg-[color-mix(in_oklab,var(--accent-lime)_18%,transparent)] px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-[oklch(0.40_0.18_130)] dark:text-[oklch(0.85_0.20_130)]">
+                Default · TRE
+              </span>
+              Instant local recommendations from niche baselines.
+            </div>
+            <Link to="/predict" className="text-xs font-medium text-primary hover:underline">
+              Edit & re-predict →
+            </Link>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            {SUGGESTIONS.map((s, i) => (
               <motion.article
                 key={s.id}
-                layout
                 initial={{ opacity: 0, y: 12 }}
-                animate={{
-                  opacity: isDismissed ? 0.4 : 1,
-                  y: 0,
-                  scale: isApplied ? 1 : 1,
-                }}
-                transition={{
-                  duration: 0.3,
-                  ease: [0.22, 1, 0.36, 1],
-                  delay: i * 0.04,
-                }}
-                className={`group relative overflow-hidden rounded-2xl p-6 transition-all ${
-                  isApplied
-                    ? "bg-[color-mix(in_oklab,var(--primary)_8%,var(--surface))] shadow-[var(--shadow-glow-purple)]"
-                    : "bg-surface/60 hover:bg-surface backdrop-blur-xl shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-elevated)]"
-                }`}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1], delay: i * 0.04 }}
+                className="group relative overflow-hidden rounded-2xl border border-border bg-surface/60 p-6 backdrop-blur-xl transition-all hover:border-border-strong"
               >
-                {/* Applied badge */}
-                <AnimatePresence>
-                  {isApplied && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.6 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.6 }}
-                      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                      className="absolute right-5 top-5 flex h-9 items-center gap-1.5 rounded-lg bg-primary px-3 font-mono text-[11px] font-semibold uppercase tracking-wider text-primary-foreground"
-                    >
-                      <Check className="h-3.5 w-3.5" />
-                      Applied
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-                {!isApplied && (
-                  <div className="absolute right-5 top-5 grid h-9 w-9 place-items-center rounded-lg bg-surface-2 font-mono text-xs text-muted-foreground">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <span className="rounded-md border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                      {s.feature}
+                    </span>
+                  </div>
+                  <span className="grid h-9 w-9 place-items-center rounded-lg bg-surface-2 font-mono text-xs text-muted-foreground">
                     {String(i + 1).padStart(2, "0")}
+                  </span>
+                </div>
+                <h3 className="mt-3 font-display text-lg font-semibold leading-snug tracking-tight">
+                  {s.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {s.detail}
+                </p>
+                <div className="mt-4 rounded-lg border border-border bg-surface-2 p-3">
+                  <div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                    Why
                   </div>
-                )}
-
-                <div className="pr-16">
-                  <h3 className="font-display text-lg font-semibold leading-snug tracking-tight">
-                    {s.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {s.detail}
-                  </p>
+                  <div className="mt-1 text-xs text-foreground">{s.rationale}</div>
                 </div>
-
-                <div className="mt-5 flex flex-wrap items-center gap-3 pt-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-                      Projection
-                    </span>
-                    <span className="font-display text-xl font-semibold tabular-nums text-gradient-primary">
-                      {s.projection}
-                    </span>
-                  </div>
-                  {s.tierShift && (
-                    <div className="flex items-center gap-1.5 text-xs">
-                      <TierBadge tier={s.tierShift.from as Tier} />
-                      <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
-                      <TierBadge tier={s.tierShift.to as Tier} />
-                    </div>
-                  )}
-                </div>
-
-                <div className="mt-5 flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setApplied((prev) => ({ ...prev, [s.id]: !prev[s.id] }))
-                    }
-                    className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-semibold transition-all ${
-                      isApplied
-                        ? "bg-surface-2 text-foreground hover:bg-surface-3"
-                        : "bg-primary text-primary-foreground hover:shadow-[var(--shadow-glow-purple)]"
-                    }`}
-                  >
-                    {isApplied ? (
-                      <>
-                        <Undo2 className="h-3.5 w-3.5" />
-                        Undo
-                      </>
-                    ) : (
-                      <>
-                        <Check className="h-3.5 w-3.5" />
-                        Apply
-                      </>
-                    )}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setDismissed((prev) => ({ ...prev, [s.id]: !prev[s.id] }))
-                    }
-                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-surface-2 px-3 py-2.5 text-xs font-medium text-muted-foreground transition-all hover:text-foreground"
-                  >
-                    <X className="h-3.5 w-3.5" />
-                    Dismiss
-                  </button>
-                </div>
+                <p className="mt-3 text-[11px] text-muted-foreground">
+                  Update inputs in the <Link to="/predict" className="text-primary hover:underline">Predict</Link> form
+                  and re-submit to see a new <span className="font-mono">predicted_class</span>.
+                </p>
               </motion.article>
-            );
-          })}
+            ))}
+          </div>
+        </section>
+
+        {/* AI enrichment block */}
+        <section className="mt-8">
+          <AnimatePresence mode="wait">
+            {aiState === "enriched" && (
+              <motion.div
+                key="enriched"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                className="rounded-2xl border border-primary/40 bg-[color-mix(in_oklab,var(--primary)_6%,var(--surface))] p-6"
+              >
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="rounded-full bg-[color-mix(in_oklab,var(--primary)_15%,transparent)] px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-primary">
+                    AI · Gemini
+                  </span>
+                  <span className="text-muted-foreground">Enriched suggestions layered on top of TRE.</span>
+                </div>
+                <ul className="mt-4 space-y-2.5">
+                  {aiSuggestions.map((s, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-sm">
+                      <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                      <span>{s}</span>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            )}
+
+            {aiState === "fallback" && (
+              <motion.div
+                key="fallback"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                role="alert"
+                className="rounded-2xl border border-[color-mix(in_oklab,var(--warning)_40%,transparent)] bg-[color-mix(in_oklab,var(--warning)_8%,var(--surface))] p-5"
+              >
+                <div className="flex items-start gap-3">
+                  <ServerCrash className="mt-0.5 h-5 w-5 shrink-0 text-[oklch(0.55_0.16_75)] dark:text-[oklch(0.85_0.16_75)]" />
+                  <div>
+                    <div className="text-sm font-semibold">AI service unavailable — falling back to TRE</div>
+                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                      Gemini API timed out or returned an error. The local Template Recommendation Engine
+                      above remains fully functional. You can retry enrichment shortly.
+                    </p>
+                    <button
+                      onClick={enrichWithAI}
+                      className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium hover:bg-surface-2 active:scale-95"
+                    >
+                      <AlertTriangle className="h-3 w-3" />
+                      Retry AI enrichment
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </section>
       </div>
     </AppShell>
-  );
-}
-
-/** Animated lift counter — eases between values */
-function AnimatedNumber({ value }: { value: number }) {
-  const [display, setDisplay] = useState(value);
-  const fromRef = useRef(value);
-
-  useEffect(() => {
-    const from = fromRef.current;
-    const to = value;
-    const start = performance.now();
-    const dur = 360;
-    let raf = 0;
-    const tick = (t: number) => {
-      const k = Math.min(1, (t - start) / dur);
-      // ease-out cubic
-      const eased = 1 - Math.pow(1 - k, 3);
-      setDisplay(from + (to - from) * eased);
-      if (k < 1) raf = requestAnimationFrame(tick);
-      else fromRef.current = to;
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [value]);
-
-  const sign = display >= 0 ? "+" : "";
-  return (
-    <span className="font-display text-5xl font-semibold tabular-nums text-gradient-primary md:text-7xl">
-      {sign}
-      {display.toFixed(0)}%
-    </span>
   );
 }

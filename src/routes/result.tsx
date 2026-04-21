@@ -13,56 +13,52 @@ export const Route = createFileRoute("/result")({
   head: () => ({
     meta: [
       { title: "Prediction Result — FAIV Predict" },
-      { name: "description", content: "Performance classification, confidence score, and projected reach for your post." },
+      { name: "description", content: "Random Forest classification: predicted_class (HIGH / AVERAGE / LOW) and confidence_score." },
     ],
   }),
   component: ResultPage,
 });
 
-const PROJECTIONS = [
-  { label: "Reach", value: "284k", delta: "+22%" },
-  { label: "Engagement", value: "9.4%", delta: "+1.6%" },
-  { label: "Saves", value: "3,120", delta: "+18%" },
-  { label: "Shares", value: "1,840", delta: "+27%" },
-];
-
-const COMPARISON = [
-  { label: "Your post", v: 91, color: "var(--primary)", tier: "High" },
-  { label: "Account avg.", v: 64, color: "var(--warning)", tier: "Average" },
-  { label: "Industry avg.", v: 52, color: "color-mix(in oklab, var(--foreground) 35%, transparent)", tier: "Low" },
+// Random Forest output: predicted_class probabilities (sum = 1.0)
+const CLASS_PROBS = [
+  { tier: "High" as const, prob: 0.71 },
+  { tier: "Average" as const, prob: 0.22 },
+  { tier: "Low" as const, prob: 0.07 },
 ];
 
 const REASONS = [
   {
-    label: "Hook fits high-retention pattern",
+    label: "Media type aligns with niche-HIGH baseline",
     detail:
-      "The opening 8 words match a top-quartile pattern in this account's niche (1,840 prior Reels analysed).",
+      "media_type = Reels (1) — the most frequent format among HIGH-tier posts in this account's niche.",
     weight: 0.28,
     direction: "positive" as const,
   },
   {
-    label: "Posting window aligns with audience peak",
+    label: "posting_hour inside niche peak window",
     detail:
-      "19:30 sits inside the 19:00–21:00 high-engagement band for this account's audience cluster.",
-    weight: 0.19,
+      "19:30 sits inside the 19:00–21:00 high-engagement band derived from the niche-level Random Forest.",
+    weight: 0.22,
     direction: "positive" as const,
   },
   {
-    label: "Save-driven CTA detected",
+    label: "has_cta = 1",
     detail:
-      "\"Save this if…\" is correlated with +14% saves in the niche-level Random Forest stage.",
-    weight: 0.14,
+      "An explicit save-prompt CTA is detected in the caption. Carries 8% MDI weight in the niche stage.",
+    weight: 0.08,
     direction: "positive" as const,
   },
 ];
 
 function ResultPage() {
-  // Brief skeleton state to show the model run completing — no spinner.
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 600);
     return () => clearTimeout(t);
   }, []);
+
+  const top = CLASS_PROBS[0];
+  const confidence = Math.round(top.prob * 100);
 
   return (
     <AppShell>
@@ -96,47 +92,56 @@ function ResultPage() {
 
               <div className="relative grid gap-10 p-8 md:p-12 lg:grid-cols-[1fr_1.2fr] lg:items-center">
                 <div className="flex justify-center">
-                  <ConfidenceMeter value={94} tier="High performer" />
+                  <ConfidenceMeter value={confidence} tier={`Tier: ${top.tier.toUpperCase()}`} label="Confidence Score" />
                 </div>
 
                 <div className="space-y-5">
                   <div className="flex flex-wrap items-center gap-2">
-                    <TierBadge tier="Viral" />
+                    <TierBadge tier={top.tier} />
                     <span className="text-xs text-muted-foreground">
-                      Run · 12 sec ago · faiv-reels v3.8.0
+                      Personal Model: Nova Studio · v1.4.0 · 12s ago
                     </span>
                   </div>
                   <h1 className="font-display text-4xl font-semibold leading-tight tracking-tight md:text-5xl">
-                    This post is forecast to{" "}
-                    <span className="text-gradient-primary">significantly outperform</span>{" "}
-                    your account baseline.
+                    Predicted class:{" "}
+                    <span className="text-gradient-primary">Tier {top.tier.toUpperCase()}</span>
                   </h1>
                   <p className="text-base text-muted-foreground">
-                    The combination of a strong opening hook, peak posting window, and a
-                    save-driven CTA places this post in the top 6% of expected outcomes for
-                    <span className="text-foreground"> @nova.studio</span>.
+                    The Random Forest classifier returned{" "}
+                    <span className="font-mono text-foreground">predicted_class = "{top.tier.toLowerCase()}"</span>{" "}
+                    with{" "}
+                    <span className="font-mono text-foreground">confidence_score = {confidence}%</span>.
+                    Niche-relative labeling (P33 / P67) used during training.
                   </p>
 
                   <div className="flex flex-wrap gap-3 pt-2">
                     <Link
                       to="/suggest"
-                      className="group inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow-purple)] transition-all hover:scale-[1.02]"
+                      className="group inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow-purple)] transition-all hover:scale-[1.02] active:scale-[0.98]"
                     >
                       <Lightbulb className="h-4 w-4" />
-                      See AI suggestions
+                      Lihat rekomendasi
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                     </Link>
                     <Link
                       to="/diagnose"
-                      className="inline-flex items-center gap-2 rounded-xl border border-border-strong bg-surface/60 px-5 py-3 text-sm font-medium text-foreground transition-all hover:bg-surface-2"
+                      className="inline-flex items-center gap-2 rounded-xl border border-border-strong bg-surface/60 px-5 py-3 text-sm font-medium text-foreground transition-all hover:bg-surface-2 active:scale-[0.98]"
                     >
                       <Activity className="h-4 w-4" />
                       Diagnose features
                     </Link>
-                    <button className="grid h-11 w-11 place-items-center rounded-xl border border-border bg-surface/60 text-muted-foreground transition-all hover:text-foreground">
+                    <button
+                      type="button"
+                      className="grid h-11 w-11 place-items-center rounded-xl border border-border bg-surface/60 text-muted-foreground transition-all hover:text-foreground active:scale-95"
+                      aria-label="Share"
+                    >
                       <Share2 className="h-4 w-4" />
                     </button>
-                    <button className="grid h-11 w-11 place-items-center rounded-xl border border-border bg-surface/60 text-muted-foreground transition-all hover:text-foreground">
+                    <button
+                      type="button"
+                      className="grid h-11 w-11 place-items-center rounded-xl border border-border bg-surface/60 text-muted-foreground transition-all hover:text-foreground active:scale-95"
+                      aria-label="Download"
+                    >
                       <Download className="h-4 w-4" />
                     </button>
                   </div>
@@ -148,106 +153,57 @@ function ResultPage() {
             <section className="mt-6 grid gap-5 lg:grid-cols-[1.6fr_1fr]">
               <WhyThisScore
                 reasons={REASONS}
-                context="Based on niche-level data + 247 personal samples · hierarchical Random Forest"
+                context="Hierarchical Random Forest · 247 personal samples (Personal Model active)"
               />
               <ModelMaturity samples={247} />
             </section>
 
-            {/* PROJECTIONS */}
-            <section className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {PROJECTIONS.map((p, i) => (
-                <div
-                  key={p.label}
-                  className="rounded-2xl border border-border bg-surface/60 p-5 backdrop-blur-xl"
-                  style={{ animation: `slide-up 0.5s ${i * 80}ms both` }}
-                >
-                  <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-                    Projected {p.label}
-                  </div>
-                  <div className="mt-3 flex items-baseline gap-2">
-                    <div className="font-display text-3xl font-semibold tracking-tight">
-                      {p.value}
-                    </div>
-                    <div className="text-xs font-semibold text-[oklch(0.45_0.18_130)] dark:text-[oklch(0.85_0.20_130)]">
-                      {p.delta}
-                    </div>
-                  </div>
-                  <div className="mt-1 text-xs text-muted-foreground">in first 48h</div>
+            {/* CLASS PROBABILITIES */}
+            <section className="mt-6 rounded-2xl border border-border bg-surface/60 p-6 backdrop-blur-xl">
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <h3 className="font-display text-lg font-semibold">Class probabilities</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Random Forest output — probabilities sum to 1.0 across the 3 niche-relative classes.
+                  </p>
                 </div>
-              ))}
-            </section>
-
-            {/* COMPARISON + BREAKDOWN */}
-            <section className="mt-6 grid gap-5 lg:grid-cols-2">
-              <div className="rounded-2xl border border-border bg-surface/60 p-6 backdrop-blur-xl">
-                <h3 className="font-display text-lg font-semibold">vs. baselines</h3>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Predicted score against rolling averages (High / Average / Low tiers).
-                </p>
-                <div className="mt-6 space-y-5">
-                  {COMPARISON.map((c, i) => (
-                    <div key={c.label}>
+                <span className="rounded-full border border-border bg-surface-2 px-2.5 py-1 font-mono text-[10px] text-muted-foreground">
+                  predict_proba
+                </span>
+              </div>
+              <div className="space-y-4">
+                {CLASS_PROBS.map((c) => {
+                  const pct = Math.round(c.prob * 100);
+                  const color =
+                    c.tier === "High"
+                      ? "var(--primary)"
+                      : c.tier === "Average"
+                      ? "var(--warning)"
+                      : "color-mix(in oklab, var(--foreground) 35%, transparent)";
+                  return (
+                    <div key={c.tier}>
                       <div className="mb-1.5 flex items-center justify-between text-xs">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium">{c.label}</span>
-                          <span className="rounded-full border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
-                            {c.tier}
+                          <TierBadge tier={c.tier} />
+                          <span className="font-mono text-muted-foreground">
+                            P({c.tier.toLowerCase()})
                           </span>
                         </div>
-                        <span className="font-mono text-muted-foreground">{c.v}</span>
+                        <span className="font-mono tabular-nums text-foreground">{pct}%</span>
                       </div>
                       <div className="h-2.5 overflow-hidden rounded-full bg-surface-3">
                         <div
-                          className="h-full rounded-full"
+                          className="h-full rounded-full transition-all duration-700"
                           style={{
-                            width: `${c.v}%`,
-                            background: `linear-gradient(90deg, ${c.color}, color-mix(in oklab, ${c.color} 60%, transparent))`,
-                            boxShadow: i === 0 ? `0 0 14px ${c.color}` : undefined,
-                            animation: `slide-up 0.7s ${i * 120}ms both`,
+                            width: `${pct}%`,
+                            background: `linear-gradient(90deg, ${color}, color-mix(in oklab, ${color} 60%, transparent))`,
+                            boxShadow: `0 0 12px ${color}`,
                           }}
                         />
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="rounded-2xl border border-border bg-surface/60 p-6 backdrop-blur-xl">
-                <h3 className="font-display text-lg font-semibold">Score breakdown</h3>
-                <p className="mt-1 text-xs text-muted-foreground">Weighted contribution per signal.</p>
-                <div className="mt-6 grid grid-cols-2 gap-3">
-                  {[
-                    { l: "Hook", v: 96, c: "var(--primary)" },
-                    { l: "Format fit", v: 92, c: "var(--secondary-glow)" },
-                    { l: "Timing", v: 88, c: "var(--success)" },
-                    { l: "CTA", v: 84, c: "var(--warning)" },
-                    { l: "Hashtags", v: 79, c: "var(--primary)" },
-                    { l: "Audience", v: 91, c: "var(--accent-lime)" },
-                  ].map((x) => (
-                    <div
-                      key={x.l}
-                      className="rounded-xl border border-border bg-surface-2 p-3"
-                    >
-                      <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-                        {x.l}
-                      </div>
-                      <div className="mt-1.5 flex items-baseline justify-between">
-                        <span className="font-display text-2xl font-semibold">{x.v}</span>
-                        <span className="text-[10px] text-muted-foreground">/100</span>
-                      </div>
-                      <div className="mt-2 h-1 overflow-hidden rounded-full bg-surface-3">
-                        <div
-                          className="h-full rounded-full"
-                          style={{
-                            width: `${x.v}%`,
-                            background: x.c,
-                            boxShadow: `0 0 8px ${x.c}`,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                  );
+                })}
               </div>
             </section>
           </>
