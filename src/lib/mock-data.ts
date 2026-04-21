@@ -1,50 +1,61 @@
 // Centralized dummy data for the FAIV Predict UI.
-// All numbers, names, and timestamps are fake — UI only.
+// Aligned with the actual ML system: hierarchical Random Forest (Niche → Personal),
+// 6 input features, 3 output classes (HIGH / AVERAGE / LOW), confidence scores.
+// All numbers, names, and timestamps are placeholders — UI only.
 
+export type Tier = "High" | "Average" | "Low";
+export type ContentFormat = "Reels" | "Carousel" | "Single Image";
+
+// ---------------------------------------------------------------------------
+// Dashboard KPIs (FR-06 / Wireframe 3.4)
+// ---------------------------------------------------------------------------
 export const KPIS = [
   {
     id: "predictions",
-    label: "Predictions run",
+    label: "Total Predictions",
     value: "12,847",
     delta: "+18.4%",
     trend: "up" as const,
-    sub: "vs last 7 days",
+    sub: "vs last 30 days",
   },
   {
-    id: "viral-rate",
-    label: "Viral hit rate",
+    id: "high-rate",
+    label: "High-Tier Rate",
     value: "23.6%",
     delta: "+4.1%",
     trend: "up" as const,
-    sub: "of high-tier posts",
+    sub: "predicted as HIGH",
   },
   {
-    id: "model-confidence",
-    label: "Avg. confidence",
-    value: "91.2%",
-    delta: "+2.0%",
+    id: "avg-confidence",
+    label: "Avg. Confidence Score",
+    value: "84.2%",
+    delta: "+1.8%",
     trend: "up" as const,
-    sub: "across 6 models",
+    sub: "across active models",
   },
   {
-    id: "accuracy",
-    label: "7d accuracy",
-    value: "87.9%",
+    id: "rolling-accuracy",
+    label: "30d Accuracy",
+    value: "83.2%",
     delta: "-0.6%",
     trend: "down" as const,
-    sub: "drift detected",
+    sub: "rolling validation",
   },
 ];
 
+// ---------------------------------------------------------------------------
+// Performance distribution — only 3 tiers from Random Forest output
+// ---------------------------------------------------------------------------
 export const PERFORMANCE_DISTRIBUTION = [
-  { tier: "Viral", count: 184, color: "var(--color-chart-1)" },
-  { tier: "Strong", count: 612, color: "var(--color-chart-2)" },
-  { tier: "Average", count: 1024, color: "var(--color-chart-3)" },
-  { tier: "Weak", count: 318, color: "var(--color-chart-4)" },
-  { tier: "Risky", count: 92, color: "var(--color-chart-5)" },
+  { tier: "High" as Tier, count: 612, color: "var(--primary)" },
+  { tier: "Average" as Tier, count: 1024, color: "var(--warning)" },
+  { tier: "Low" as Tier, count: 318, color: "color-mix(in oklab, var(--foreground) 35%, transparent)" },
 ];
 
-// Posting performance heatmap: 7 days × 24 hours, value = avg engagement score
+// ---------------------------------------------------------------------------
+// Posting heatmap (7d × 24h)
+// ---------------------------------------------------------------------------
 export const HEATMAP_DATA: number[][] = (() => {
   const days = 7;
   const hours = 24;
@@ -52,7 +63,6 @@ export const HEATMAP_DATA: number[][] = (() => {
   for (let d = 0; d < days; d++) {
     const row: number[] = [];
     for (let h = 0; h < hours; h++) {
-      // Synthesize realistic posting peaks: morning (8-10), lunch (12-13), evening (18-22)
       const morning = Math.exp(-Math.pow((h - 9) / 2.2, 2)) * 0.6;
       const lunch = Math.exp(-Math.pow((h - 12.5) / 1.4, 2)) * 0.45;
       const evening = Math.exp(-Math.pow((h - 20) / 2.5, 2)) * 0.95;
@@ -68,194 +78,263 @@ export const HEATMAP_DATA: number[][] = (() => {
 
 export const HEATMAP_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-// Content calendar — scheduled posts for the current month
-export type CalendarEntry = {
-  id: string;
-  day: number; // day of month
-  account: string;
-  format: "Reels" | "Carousel" | "Story" | "Single image";
-  title: string;
-  tier: Tier;
-  time: string;
-};
-
-export const CALENDAR_ENTRIES: CalendarEntry[] = [
-  { id: "c1", day: 2, account: "@nova.studio", format: "Reels", title: "Spring drop teaser", tier: "Viral", time: "20:15" },
-  { id: "c2", day: 3, account: "@kindred.brand", format: "Carousel", title: "Founder story pt.2", tier: "Strong", time: "12:30" },
-  { id: "c3", day: 5, account: "@orbit.media", format: "Story", title: "BTS shoot day", tier: "Average", time: "09:00" },
-  { id: "c4", day: 7, account: "@nova.studio", format: "Reels", title: "Studio walkthrough", tier: "Strong", time: "19:45" },
-  { id: "c5", day: 8, account: "@halcyon.fm", format: "Single image", title: "Album artwork reveal", tier: "Viral", time: "18:00" },
-  { id: "c6", day: 10, account: "@solene.atelier", format: "Carousel", title: "Atelier lookbook", tier: "Strong", time: "11:00" },
-  { id: "c7", day: 12, account: "@kindred.brand", format: "Reels", title: "Customer feature", tier: "Average", time: "20:00" },
-  { id: "c8", day: 13, account: "@vector.goods", format: "Story", title: "Limited drop alert", tier: "Weak", time: "16:30" },
-  { id: "c9", day: 15, account: "@nova.studio", format: "Reels", title: "Behind the brand", tier: "Viral", time: "20:30" },
-  { id: "c10", day: 17, account: "@orbit.media", format: "Carousel", title: "Editorial recap", tier: "Strong", time: "13:15" },
-  { id: "c11", day: 18, account: "@halcyon.fm", format: "Reels", title: "Track teaser", tier: "Strong", time: "21:00" },
-  { id: "c12", day: 20, account: "@solene.atelier", format: "Single image", title: "Press feature", tier: "Average", time: "10:00" },
-  { id: "c13", day: 22, account: "@kindred.brand", format: "Carousel", title: "Sustainability report", tier: "Average", time: "14:00" },
-  { id: "c14", day: 23, account: "@nova.studio", format: "Reels", title: "Campaign launch", tier: "Viral", time: "19:30" },
-  { id: "c15", day: 25, account: "@vector.goods", format: "Story", title: "Restock teaser", tier: "Strong", time: "17:00" },
-  { id: "c16", day: 27, account: "@orbit.media", format: "Reels", title: "Founder Q&A", tier: "Strong", time: "20:00" },
-  { id: "c17", day: 28, account: "@halcyon.fm", format: "Carousel", title: "Tour dates", tier: "Average", time: "12:00" },
-];
-
+// ---------------------------------------------------------------------------
+// 30-day usage trend
+// ---------------------------------------------------------------------------
 export const USAGE_TREND = Array.from({ length: 30 }, (_, i) => {
   const seed = Math.sin(i * 1.7) * 0.5 + 0.5;
   return {
     day: i + 1,
     predictions: Math.round(280 + seed * 420 + (i % 5) * 30),
-    viral: Math.round(40 + seed * 90 + (i % 7) * 6),
+    high: Math.round(40 + seed * 90 + (i % 7) * 6),
   };
 });
 
-export const RECENT_PREDICTIONS = [
-  {
-    id: "pr_8821",
-    account: "@nova.studio",
-    format: "Reels",
-    tier: "Viral",
-    confidence: 94,
-    when: "2 min ago",
-  },
-  {
-    id: "pr_8820",
-    account: "@kindred.brand",
-    format: "Carousel",
-    tier: "Strong",
-    confidence: 88,
-    when: "6 min ago",
-  },
-  {
-    id: "pr_8819",
-    account: "@orbit.media",
-    format: "Single image",
-    tier: "Average",
-    confidence: 71,
-    when: "11 min ago",
-  },
-  {
-    id: "pr_8818",
-    account: "@solene.atelier",
-    format: "Reels",
-    tier: "Weak",
-    confidence: 64,
-    when: "18 min ago",
-  },
-  {
-    id: "pr_8817",
-    account: "@halcyon.fm",
-    format: "Story",
-    tier: "Strong",
-    confidence: 82,
-    when: "24 min ago",
-  },
+// ---------------------------------------------------------------------------
+// Recent predictions (live feed)
+// Only allowed formats: Reels / Carousel / Single Image
+// Only allowed tiers: High / Average / Low
+// ---------------------------------------------------------------------------
+export const RECENT_PREDICTIONS: Array<{
+  id: string;
+  account: string;
+  format: ContentFormat;
+  tier: Tier;
+  confidence: number;
+  when: string;
+}> = [
+  { id: "pr_8821", account: "@nova.studio", format: "Reels", tier: "High", confidence: 94, when: "2 min ago" },
+  { id: "pr_8820", account: "@kindred.brand", format: "Carousel", tier: "High", confidence: 88, when: "6 min ago" },
+  { id: "pr_8819", account: "@orbit.media", format: "Single Image", tier: "Average", confidence: 71, when: "11 min ago" },
+  { id: "pr_8818", account: "@solene.atelier", format: "Reels", tier: "Low", confidence: 64, when: "18 min ago" },
+  { id: "pr_8817", account: "@halcyon.fm", format: "Carousel", tier: "Average", confidence: 82, when: "24 min ago" },
 ];
 
-export const FEATURE_IMPORTANCE = [
-  { feature: "Caption hook strength", impact: 0.28, direction: "positive" as const },
-  { feature: "Posting time (peak)", impact: 0.19, direction: "positive" as const },
-  { feature: "Hashtag relevance", impact: 0.14, direction: "positive" as const },
-  { feature: "Format × audience fit", impact: 0.12, direction: "positive" as const },
-  { feature: "CTA presence", impact: 0.09, direction: "positive" as const },
-  { feature: "Caption length", impact: 0.08, direction: "negative" as const },
-  { feature: "Emoji density", impact: 0.06, direction: "negative" as const },
-  { feature: "Repetition vs prior", impact: 0.04, direction: "negative" as const },
+// ---------------------------------------------------------------------------
+// Feature importance — MDI (Mean Decrease in Impurity)
+// All values are POSITIVE proportions (0..1) summing to 1.0.
+// Only the 6 real input features used by the Random Forest model.
+// ---------------------------------------------------------------------------
+export const FEATURE_IMPORTANCE: Array<{
+  feature: string;
+  key: "media_type" | "posting_hour" | "caption_length" | "hashtag_count" | "posting_day" | "has_cta";
+  importance: number; // MDI proportion, sums to 1.0
+}> = [
+  { feature: "Media Type (format)", key: "media_type", importance: 0.28 },
+  { feature: "Posting Hour", key: "posting_hour", importance: 0.22 },
+  { feature: "Caption Length", key: "caption_length", importance: 0.17 },
+  { feature: "Hashtag Count", key: "hashtag_count", importance: 0.14 },
+  { feature: "Posting Day", key: "posting_day", importance: 0.11 },
+  { feature: "Has CTA", key: "has_cta", importance: 0.08 },
 ];
 
-export const SUGGESTIONS = [
+// ---------------------------------------------------------------------------
+// TRE (Template Recommendation Engine) suggestions — local, instant.
+// Only references the 6 real features. No reach/impressions/saves projections,
+// no apply-to-update mechanic. The model only outputs class + confidence.
+// ---------------------------------------------------------------------------
+export const SUGGESTIONS: Array<{
+  id: string;
+  feature: "caption_length" | "hashtag_count" | "has_cta" | "posting_hour" | "posting_day" | "media_type";
+  title: string;
+  detail: string;
+  rationale: string;
+}> = [
   {
     id: "s1",
-    title: "Tighten the hook to 8 words",
+    feature: "caption_length",
+    title: "Trim caption to 180–320 characters",
     detail:
-      "Lead with the outcome, defer context. Predicted lift on first-3-second retention.",
-    projection: "+14% reach",
-    tierShift: { from: "Strong", to: "Viral" },
+      "Posts in this niche with caption_length between 180–320 chars more often classify as HIGH.",
+    rationale: "Niche baseline: HIGH-tier captions average 247 chars (P25–P75: 180–320).",
   },
   {
     id: "s2",
-    title: "Move CTA to second line",
+    feature: "has_cta",
+    title: "Include an explicit CTA",
     detail:
-      "Audiences in this segment respond 1.6× when CTA follows the value statement.",
-    projection: "+6% saves",
-    tierShift: { from: "Average", to: "Strong" },
+      "Add a save / share / comment prompt so has_cta = 1 when the request is sent to the model.",
+    rationale: "has_cta carries 8% MDI weight in the niche Random Forest stage.",
   },
   {
     id: "s3",
-    title: "Swap 3 broad hashtags for niche",
+    feature: "hashtag_count",
+    title: "Use 3–8 hashtags",
     detail:
-      "Lower competition, higher discovery probability for current posting window.",
-    projection: "+9% impressions",
-    tierShift: null,
+      "Adjust hashtag_count to land between 3 and 8 — the modal range for HIGH-tier posts in this niche.",
+    rationale: "hashtag_count carries 14% MDI weight in this niche's model.",
   },
   {
     id: "s4",
-    title: "Reschedule to 20:15 local",
+    feature: "posting_hour",
+    title: "Reschedule into the 19:00–21:00 window",
     detail:
-      "Audience activity peaks 47 minutes later than your default slot.",
-    projection: "+11% engagement",
-    tierShift: { from: "Strong", to: "Viral" },
+      "posting_hour is the second-strongest signal for this niche after media_type.",
+    rationale: "Niche audience peak: 20:15 local. posting_hour MDI = 22%.",
   },
 ];
 
-export const BRANDS = [
-  { id: "b1", name: "Nova Studio", handle: "@nova.studio", posts: 412, tier: "Enterprise", status: "active" },
-  { id: "b2", name: "Kindred", handle: "@kindred.brand", posts: 287, tier: "Growth", status: "active" },
-  { id: "b3", name: "Orbit Media", handle: "@orbit.media", posts: 198, tier: "Growth", status: "paused" },
-  { id: "b4", name: "Solène Atelier", handle: "@solene.atelier", posts: 144, tier: "Boutique", status: "active" },
-  { id: "b5", name: "Halcyon FM", handle: "@halcyon.fm", posts: 96, tier: "Boutique", status: "active" },
-  { id: "b6", name: "Vector Goods", handle: "@vector.goods", posts: 72, tier: "Boutique", status: "trial" },
+// ---------------------------------------------------------------------------
+// Brands — with hierarchy stage (Niche fallback vs Personal model)
+// Each brand has a `samples` count out of the 200-content threshold.
+// ---------------------------------------------------------------------------
+export type ModelStage = "Personal" | "Niche";
+export type BrandStatus = "active" | "paused" | "trial";
+
+export interface Brand {
+  id: string;
+  name: string;
+  handle: string;
+  niche: string;        // niche_id (Supabase column) — drives fallback model
+  samples: number;       // content samples collected for this account
+  stage: ModelStage;     // derived from samples >= 200
+  accuracy: number;      // % accuracy on the active model for this brand
+  drift: boolean;        // concept drift detected
+  status: BrandStatus;
+  lastRun: string;
+}
+
+const SAMPLE_TARGET = 200;
+const stageOf = (s: number): ModelStage => (s >= SAMPLE_TARGET ? "Personal" : "Niche");
+
+export const BRANDS: Brand[] = [
+  { id: "b1", name: "Lasence Bakeshop", handle: "@lasence.bakeshop", niche: "Bakery & Café", samples: 412, stage: stageOf(412), accuracy: 81.0, drift: false, status: "active", lastRun: "2h ago" },
+  { id: "b2", name: "Bison Gym", handle: "@bison.gym", niche: "Fitness & Wellness", samples: 35, stage: stageOf(35), accuracy: 73.0, drift: true, status: "active", lastRun: "12m ago" },
+  { id: "b3", name: "Nova Studio", handle: "@nova.studio", niche: "Creative Agency", samples: 247, stage: stageOf(247), accuracy: 86.4, drift: false, status: "active", lastRun: "8m ago" },
+  { id: "b4", name: "Kindred", handle: "@kindred.brand", niche: "Lifestyle Retail", samples: 124, stage: stageOf(124), accuracy: 78.5, drift: false, status: "active", lastRun: "1h ago" },
+  { id: "b5", name: "Orbit Media", handle: "@orbit.media", niche: "Media & Publishing", samples: 198, stage: stageOf(198), accuracy: 75.2, drift: false, status: "paused", lastRun: "1d ago" },
+  { id: "b6", name: "Solène Atelier", handle: "@solene.atelier", niche: "Fashion Atelier", samples: 144, stage: stageOf(144), accuracy: 76.1, drift: false, status: "active", lastRun: "30m ago" },
 ];
 
-export const MODELS = [
-  { id: "m1", name: "faiv-core", version: "v4.2.1", accuracy: 89.4, status: "production", trained: "2 days ago" },
-  { id: "m2", name: "faiv-reels", version: "v3.8.0", accuracy: 92.1, status: "production", trained: "5 days ago" },
-  { id: "m3", name: "faiv-carousel", version: "v2.5.3", accuracy: 86.7, status: "production", trained: "1 week ago" },
-  { id: "m4", name: "faiv-experimental", version: "v0.9.0", accuracy: 81.2, status: "canary", trained: "12 hours ago" },
-  { id: "m5", name: "faiv-legacy", version: "v3.1.0", accuracy: 78.5, status: "archived", trained: "3 months ago" },
+// ---------------------------------------------------------------------------
+// Niches available in the system (used by AI Brand Classifier)
+// ---------------------------------------------------------------------------
+export const NICHES = [
+  "Bakery & Café",
+  "Fitness & Wellness",
+  "Creative Agency",
+  "Lifestyle Retail",
+  "Media & Publishing",
+  "Fashion Atelier",
+  "Food & Beverage",
+  "Beauty & Skincare",
+  "Hospitality",
+  "Tech & SaaS",
 ];
 
-export const BATCH_RESULTS = [
-  { id: 1, name: "Spring drop teaser", format: "Reels", tier: "Viral", confidence: 93 },
-  { id: 2, name: "Founder origin story", format: "Carousel", tier: "Strong", confidence: 86 },
-  { id: 3, name: "Behind the scenes", format: "Story", tier: "Average", confidence: 72 },
-  { id: 4, name: "Product unbox", format: "Reels", tier: "Strong", confidence: 81 },
-  { id: 5, name: "Customer review", format: "Single image", tier: "Weak", confidence: 58 },
-  { id: 6, name: "Sale countdown", format: "Story", tier: "Average", confidence: 69 },
-  { id: 7, name: "Lookbook page", format: "Carousel", tier: "Viral", confidence: 91 },
-  { id: 8, name: "Studio tour", format: "Reels", tier: "Strong", confidence: 84 },
+// ---------------------------------------------------------------------------
+// ML Models registry — naming follows hierarchy:
+//   "Niche Model: <niche>"  or  "Personal Model: <brand>"
+// Schema mirrors Supabase ml_models table → only is_active boolean.
+// Includes 30-day rolling accuracy + drift detection.
+// ---------------------------------------------------------------------------
+export interface MlModel {
+  id: string;
+  name: string;          // "Niche Model: Bakery" / "Personal Model: Lasence"
+  scope: "Niche" | "Personal";
+  niche: string;
+  version: string;
+  baselineAccuracy: number; // accuracy at training time
+  rollingAccuracy: number;  // 30d rolling validation accuracy
+  is_active: boolean;
+  trained: string;
+  rolling30d: number[];     // 30 daily accuracy points (0..100)
+}
+
+const synthRolling = (target: number, drift: boolean) =>
+  Array.from({ length: 30 }, (_, i) => {
+    const noise = Math.sin(i * 1.3) * 1.4 + Math.cos(i * 0.7) * 0.8;
+    if (drift && i >= 22) {
+      // simulate concept drift in last week — drop > 15 pts
+      return Math.max(40, target - 17 - (i - 22) * 0.6 + noise);
+    }
+    return Math.max(40, Math.min(99, target + noise));
+  });
+
+export const MODELS: MlModel[] = [
+  {
+    id: "m1",
+    name: "Niche Model: Bakery & Café",
+    scope: "Niche",
+    niche: "Bakery & Café",
+    version: "v4.2.1",
+    baselineAccuracy: 84.0,
+    rollingAccuracy: 83.6,
+    is_active: true,
+    trained: "2 days ago",
+    rolling30d: synthRolling(83.6, false),
+  },
+  {
+    id: "m2",
+    name: "Niche Model: Fitness & Wellness",
+    scope: "Niche",
+    niche: "Fitness & Wellness",
+    version: "v3.8.0",
+    baselineAccuracy: 89.1,
+    rollingAccuracy: 71.4,
+    is_active: true,
+    trained: "5 days ago",
+    rolling30d: synthRolling(89.1, true),
+  },
+  {
+    id: "m3",
+    name: "Personal Model: Lasence Bakeshop",
+    scope: "Personal",
+    niche: "Bakery & Café",
+    version: "v2.5.3",
+    baselineAccuracy: 82.0,
+    rollingAccuracy: 81.0,
+    is_active: true,
+    trained: "1 week ago",
+    rolling30d: synthRolling(81.0, false),
+  },
+  {
+    id: "m4",
+    name: "Personal Model: Nova Studio",
+    scope: "Personal",
+    niche: "Creative Agency",
+    version: "v1.4.0",
+    baselineAccuracy: 87.2,
+    rollingAccuracy: 86.4,
+    is_active: true,
+    trained: "12 hours ago",
+    rolling30d: synthRolling(86.4, false),
+  },
+  {
+    id: "m5",
+    name: "Niche Model: Lifestyle Retail",
+    scope: "Niche",
+    niche: "Lifestyle Retail",
+    version: "v3.1.0",
+    baselineAccuracy: 79.0,
+    rollingAccuracy: 78.5,
+    is_active: false,
+    trained: "3 months ago",
+    rolling30d: synthRolling(78.5, false),
+  },
 ];
 
-export type Tier = "Viral" | "Strong" | "Average" | "Weak" | "Risky";
-
+// ---------------------------------------------------------------------------
+// Tier metadata — only HIGH / AVERAGE / LOW
+// HIGH = primary purple, AVERAGE = warning amber, LOW = muted destructive
+// ---------------------------------------------------------------------------
 export const TIER_META: Record<Tier, { label: string; color: string; bg: string; ring: string }> = {
-  Viral: {
-    label: "Viral",
-    color: "text-[oklch(0.45_0.20_295)]",
+  High: {
+    label: "HIGH",
+    color: "text-[oklch(0.45_0.20_295)] dark:text-[oklch(0.85_0.20_295)]",
     bg: "bg-[color-mix(in_oklab,var(--primary)_14%,transparent)]",
     ring: "ring-[color-mix(in_oklab,var(--primary)_35%,transparent)]",
   },
-  Strong: {
-    label: "Strong",
-    color: "text-[oklch(0.40_0.18_130)]",
-    bg: "bg-[color-mix(in_oklab,var(--accent-lime)_22%,transparent)]",
-    ring: "ring-[color-mix(in_oklab,var(--accent-lime)_45%,transparent)]",
-  },
   Average: {
-    label: "Average",
-    color: "text-[oklch(0.45_0.14_75)] dark:text-[oklch(0.85_0.16_75)]",
-    bg: "bg-[color-mix(in_oklab,var(--warning)_14%,transparent)]",
-    ring: "ring-[color-mix(in_oklab,var(--warning)_35%,transparent)]",
+    label: "AVERAGE",
+    color: "text-[oklch(0.50_0.16_75)] dark:text-[oklch(0.85_0.16_75)]",
+    bg: "bg-[color-mix(in_oklab,var(--warning)_16%,transparent)]",
+    ring: "ring-[color-mix(in_oklab,var(--warning)_38%,transparent)]",
   },
-  Weak: {
-    label: "Weak",
-    color: "text-[oklch(0.45_0.14_75)]",
-    bg: "bg-[color-mix(in_oklab,var(--warning)_18%,transparent)]",
-    ring: "ring-[color-mix(in_oklab,var(--warning)_40%,transparent)]",
-  },
-  Risky: {
-    label: "Risky",
-    color: "text-[oklch(0.48_0.20_22)]",
-    bg: "bg-[color-mix(in_oklab,var(--destructive)_14%,transparent)]",
-    ring: "ring-[color-mix(in_oklab,var(--destructive)_35%,transparent)]",
+  Low: {
+    label: "LOW",
+    color: "text-[oklch(0.48_0.18_22)] dark:text-[oklch(0.78_0.20_22)]",
+    bg: "bg-[color-mix(in_oklab,var(--destructive)_12%,transparent)]",
+    ring: "ring-[color-mix(in_oklab,var(--destructive)_30%,transparent)]",
   },
 };
