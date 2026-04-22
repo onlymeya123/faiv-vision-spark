@@ -45,10 +45,10 @@ function DashboardPage() {
 
   return (
     <AppShell>
-      <div className="px-5 py-8 md:px-10 md:py-10">
+      <div className="px-5 py-6 md:px-10 md:py-8">
         {/* HERO */}
-        <section className="relative mb-10 overflow-hidden rounded-3xl border border-border-strong bg-gradient-to-br from-surface via-surface-2 to-surface p-1">
-          <div className="relative overflow-hidden rounded-[22px] p-8 md:p-12">
+        <section className="relative mb-8 overflow-hidden rounded-3xl border border-border-strong bg-gradient-to-br from-surface via-surface-2 to-surface p-1">
+          <div className="relative overflow-hidden rounded-[22px] p-6 md:p-8">
             <div aria-hidden className="absolute inset-0 grid-bg opacity-40" />
             <div
               aria-hidden
@@ -69,21 +69,20 @@ function DashboardPage() {
               }}
             />
 
-            <div className="relative z-10 grid gap-10 lg:grid-cols-[1.4fr_1fr] lg:items-center">
-              <div className="space-y-6">
+            <div className="relative z-10 grid gap-6 lg:grid-cols-[1.4fr_1fr] lg:items-center">
+              <div className="space-y-4">
                 <div className="inline-flex items-center gap-2 rounded-full border border-border-strong bg-surface/60 px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-primary backdrop-blur">
                   <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary shadow-[0_0_8px_var(--primary)]" />
                   Hierarchical Random Forest · {BRANDS.length} brands
                 </div>
-                <h1 className="font-display text-4xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
+                <h1 className="font-display text-[26px] font-semibold leading-[1.1] tracking-tight md:text-4xl">
                   Good morning,{" "}
-                  <span className="text-gradient-primary">Alex</span>.
-                  <br />
+                  <span className="text-gradient-primary">Alex</span>.{" "}
                   <span className="text-muted-foreground">
                     Model health is steady today.
                   </span>
                 </h1>
-                <p className="max-w-xl text-base text-muted-foreground">
+                <p className="max-w-xl text-sm text-muted-foreground">
                   <span className="font-semibold text-foreground">{personalCount}</span> brand
                   {personalCount === 1 ? "" : "s"} on a <span className="font-semibold text-foreground">Personal Model</span>,{" "}
                   rest on niche fallback. {driftCount > 0 && (
@@ -92,18 +91,18 @@ function DashboardPage() {
                     </span>
                   )}
                 </p>
-                <div className="flex flex-wrap gap-3 pt-2">
+                <div className="flex flex-wrap gap-3 pt-1">
                   <Link
                     to="/predict"
-                    className="group inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow-purple)] transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    className="group inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow-purple)] transition-all hover:scale-[1.02] active:scale-[0.98]"
                   >
                     <Sparkles className="h-4 w-4" />
-                    Prediksi Baru
+                    New Prediction
                     <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </Link>
                   <Link
                     to="/admin"
-                    className="inline-flex items-center gap-2 rounded-xl border border-border-strong bg-surface/60 px-5 py-3 text-sm font-medium text-foreground backdrop-blur transition-all hover:bg-surface-2 active:scale-[0.98]"
+                    className="inline-flex items-center gap-2 rounded-xl border border-border-strong bg-surface/60 px-5 py-2.5 text-sm font-medium text-foreground backdrop-blur transition-all hover:bg-surface-2 active:scale-[0.98]"
                   >
                     <Cpu className="h-4 w-4" />
                     Model Health
@@ -113,23 +112,23 @@ function DashboardPage() {
 
               {/* Hero side: average confidence */}
               <div className="relative">
-                <div className="relative rounded-2xl border border-border-strong bg-background/40 p-6 backdrop-blur-xl">
+                <div className="relative rounded-2xl border border-border-strong bg-background/40 p-5 backdrop-blur-xl">
                   <div className="flex items-center justify-between">
-                    <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-                      Average Confidence Score · 30d
+                    <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                      Avg Confidence · 30d
                     </div>
                     <TierBadge tier="High" />
                   </div>
-                  <div className="mt-4 flex items-baseline gap-2">
-                    <div className="font-display text-6xl font-semibold tracking-tight text-gradient-primary">
+                  <div className="mt-3 flex items-baseline gap-2">
+                    <div className="font-display text-5xl font-semibold tracking-tight text-gradient-primary">
                       84.2%
                     </div>
                   </div>
-                  <p className="mt-2 text-sm text-muted-foreground">
+                  <p className="mt-1.5 text-xs text-muted-foreground">
                     Mean Random Forest probability across all classified posts.
                   </p>
 
-                  <div className="mt-6 h-[110px]">
+                  <div className="mt-4 h-[80px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={USAGE_TREND.slice(-14)} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
                         <defs>
@@ -382,21 +381,21 @@ function DashboardPage() {
                 {
                   to: "/predict" as const,
                   icon: Sparkles,
-                  title: "Prediksi Baru",
+                  title: "New Prediction",
                   desc: "Score a single post (Reels / Carousel / Single Image)",
                   glow: "var(--primary)",
                 },
                 {
                   to: "/diagnose" as const,
                   icon: Activity,
-                  title: "Diagnosa Faktor",
+                  title: "Diagnose Factors",
                   desc: "Inspect MDI feature importance",
                   glow: "var(--secondary-glow)",
                 },
                 {
                   to: "/suggest" as const,
                   icon: Lightbulb,
-                  title: "Sistem Rekomendasi (TRE + AI)",
+                  title: "Recommendation Engine (TRE + AI)",
                   desc: "Local templates, optionally enriched by AI",
                   glow: "var(--success)",
                 },
