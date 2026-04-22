@@ -45,10 +45,10 @@ function DashboardPage() {
 
   return (
     <AppShell>
-      <div className="px-5 pt-20 pb-6 md:px-10 md:pt-24 md:pb-8">
+      <div className="px-5 py-6 md:px-10 md:py-8">
         {/* HERO */}
-        <section className="relative mb-8 overflow-hidden rounded-3xl border border-border-strong bg-gradient-to-br from-surface via-surface-2 to-surface p-1">
-          <div className="relative overflow-hidden rounded-[22px] p-6 md:p-8">
+        <section className="relative mb-8 flex min-h-[calc(100vh-7rem)] overflow-hidden rounded-3xl border border-border-strong bg-gradient-to-br from-surface via-surface-2 to-surface p-1">
+          <div className="relative flex w-full flex-col justify-center overflow-hidden rounded-[22px] p-6 md:p-10">
             <div aria-hidden className="absolute inset-0 grid-bg opacity-40" />
             <div
               aria-hidden
