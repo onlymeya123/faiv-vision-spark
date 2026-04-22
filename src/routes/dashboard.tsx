@@ -45,7 +45,7 @@ function DashboardPage() {
 
   return (
     <AppShell>
-      <div className="px-5 pt-12 pb-6 md:px-10 md:pt-16 md:pb-8">
+      <div className="px-5 pt-20 pb-6 md:px-10 md:pt-24 md:pb-8">
         {/* HERO */}
         <section className="relative mb-8 overflow-hidden rounded-3xl border border-border-strong bg-gradient-to-br from-surface via-surface-2 to-surface p-1">
           <div className="relative overflow-hidden rounded-[22px] p-6 md:p-8">
