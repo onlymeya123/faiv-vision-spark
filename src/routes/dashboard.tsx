@@ -48,13 +48,13 @@ function DashboardPage() {
   return (
     <AppShell>
       <div className="px-5 py-6 md:px-10 md:py-8">
-        {/* HERO */}
-        <section className="relative mb-8 flex min-h-[calc(100vh-7rem)] overflow-hidden rounded-3xl border border-border-strong bg-gradient-to-br from-surface via-surface-2 to-surface p-1">
-          <div className="relative flex w-full flex-col justify-center overflow-hidden rounded-[22px] p-6 md:p-10">
+        {/* HERO — full viewport, no empty zones */}
+        <section className="relative mb-10 flex min-h-[calc(100vh-7rem)] overflow-hidden rounded-3xl border border-border-strong bg-gradient-to-br from-surface via-surface-2 to-surface p-1">
+          <div className="relative flex w-full flex-col overflow-hidden rounded-[22px] p-6 md:p-12">
             <div aria-hidden className="absolute inset-0 grid-bg opacity-40" />
             <div
               aria-hidden
-              className="absolute -top-32 -right-20 h-[400px] w-[400px] rounded-full"
+              className="absolute -top-32 -right-20 h-[500px] w-[500px] rounded-full"
               style={{
                 background:
                   "radial-gradient(circle, color-mix(in oklab, var(--primary-glow) 50%, transparent), transparent 70%)",
@@ -63,7 +63,7 @@ function DashboardPage() {
             />
             <div
               aria-hidden
-              className="absolute -bottom-32 left-1/3 h-[400px] w-[400px] rounded-full"
+              className="absolute -bottom-40 -left-10 h-[500px] w-[500px] rounded-full"
               style={{
                 background:
                   "radial-gradient(circle, color-mix(in oklab, var(--secondary-glow) 45%, transparent), transparent 70%)",
@@ -71,86 +71,91 @@ function DashboardPage() {
               }}
             />
 
-            <div className="relative z-10 grid gap-6 lg:grid-cols-[1.4fr_1fr] lg:items-center">
-              <div className="space-y-4">
-                <div className="inline-flex items-center gap-2 rounded-full border border-border-strong bg-surface/60 px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-primary backdrop-blur">
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary shadow-[0_0_8px_var(--primary)]" />
-                  Hierarchical Random Forest · {BRANDS.length} brands
-                </div>
-                <h1 className="font-display text-[26px] font-semibold leading-[1.1] tracking-tight md:text-4xl">
-                  Good morning,{" "}
-                  <span className="text-gradient-primary">Alex</span>.{" "}
-                  <span className="text-muted-foreground">
-                    Model health is steady today.
-                  </span>
-                </h1>
-                <p className="max-w-xl text-sm text-muted-foreground">
-                  <span className="font-semibold text-foreground">{personalCount}</span> brand
-                  {personalCount === 1 ? "" : "s"} on a <span className="font-semibold text-foreground">Personal Model</span>,{" "}
-                  rest on niche fallback. {driftCount > 0 && (
-                    <span className="font-semibold text-[oklch(0.55_0.20_22)] dark:text-[oklch(0.80_0.20_22)]">
-                      {driftCount} concept-drift alert{driftCount === 1 ? "" : "s"} active.
-                    </span>
-                  )}
-                </p>
-                <div className="flex flex-wrap gap-3 pt-1">
-                  <Link
-                    to="/predict"
-                    className="group inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow-purple)] transition-all hover:scale-[1.02] active:scale-[0.98]"
-                  >
-                    <Sparkles className="h-4 w-4" />
-                    New Prediction
-                    <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                  </Link>
-                  <Link
-                    to="/admin"
-                    className="inline-flex items-center gap-2 rounded-xl border border-border-strong bg-surface/60 px-5 py-2.5 text-sm font-medium text-foreground backdrop-blur transition-all hover:bg-surface-2 active:scale-[0.98]"
-                  >
-                    <Cpu className="h-4 w-4" />
-                    Model Health
-                  </Link>
-                </div>
+            {/* Top row: greeting + status pills */}
+            <div className="relative z-10 flex flex-wrap items-start justify-between gap-4">
+              <div className="inline-flex items-center gap-2 rounded-full border border-border-strong bg-surface/60 px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-primary backdrop-blur">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary shadow-[0_0_8px_var(--primary)]" />
+                {BRANDS.length} brands tracked
               </div>
-
-              {/* Hero side: average confidence */}
-              <div className="relative">
-                <div className="relative rounded-2xl border border-border-strong bg-background/40 p-5 backdrop-blur-xl">
-                  <div className="flex items-center justify-between">
-                    <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                      Avg Confidence · 30d
-                    </div>
-                    <TierBadge tier="High" />
-                  </div>
-                  <div className="mt-3 flex items-baseline gap-2">
-                    <div className="font-display text-5xl font-semibold tracking-tight text-gradient-primary">
-                      84.2%
-                    </div>
-                  </div>
-                  <p className="mt-1.5 text-xs text-muted-foreground">
-                    Mean Random Forest probability across all classified posts.
-                  </p>
-
-                  <div className="mt-4 h-[80px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={USAGE_TREND.slice(-14)} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
-                        <defs>
-                          <linearGradient id="hero-grad" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="oklch(0.55 0.18 295)" stopOpacity={0.5} />
-                            <stop offset="100%" stopColor="oklch(0.55 0.18 295)" stopOpacity={0} />
-                          </linearGradient>
-                        </defs>
-                        <Area
-                          type="monotone"
-                          dataKey="predictions"
-                          stroke="oklch(0.55 0.18 295)"
-                          strokeWidth={2}
-                          fill="url(#hero-grad)"
-                        />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1.5 text-[11px] font-medium text-muted-foreground backdrop-blur">
+                  <TrendingUp className="h-3 w-3 text-[oklch(0.65_0.18_155)]" />
+                  Predictions <span className="font-mono text-foreground">+18.4%</span> this week
                 </div>
+                {driftCount > 0 && (
+                  <div className="inline-flex items-center gap-2 rounded-full border border-[color-mix(in_oklab,var(--destructive)_45%,transparent)] bg-[color-mix(in_oklab,var(--destructive)_10%,transparent)] px-3 py-1.5 text-[11px] font-semibold text-destructive backdrop-blur">
+                    <AlertTriangle className="h-3 w-3" />
+                    {driftCount} model{driftCount === 1 ? "" : "s"} need attention
+                  </div>
+                )}
               </div>
+            </div>
+
+            {/* Centered headline + sub */}
+            <div className="relative z-10 my-auto max-w-3xl py-10">
+              <h1 className="font-display text-[34px] font-semibold leading-[1.05] tracking-tight md:text-[56px]">
+                Good morning,{" "}
+                <span className="text-gradient-primary">Alex</span>.
+              </h1>
+              <h2 className="mt-3 font-display text-2xl font-medium leading-tight tracking-tight text-muted-foreground md:text-3xl">
+                Your content is performing well today.
+              </h2>
+              <p className="mt-5 max-w-xl text-base text-muted-foreground">
+                <span className="font-semibold text-foreground">{personalCount}</span> of your brands now have a personalised model, and the rest are learning fast. Pick a workflow below to keep momentum going.
+              </p>
+
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link
+                  to="/predict"
+                  className="group inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow-purple)] transition-all hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  New Prediction
+                  <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </Link>
+                <Link
+                  to="/calendar"
+                  className="inline-flex items-center gap-2 rounded-xl border border-border-strong bg-surface/60 px-5 py-3 text-sm font-medium text-foreground backdrop-blur transition-all hover:bg-surface-2 active:scale-[0.98]"
+                >
+                  <CalendarRange className="h-4 w-4" />
+                  Plan a Calendar
+                </Link>
+                <Link
+                  to="/history"
+                  className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface/40 px-5 py-3 text-sm font-medium text-muted-foreground backdrop-blur transition-all hover:text-foreground hover:bg-surface-2 active:scale-[0.98]"
+                >
+                  <History className="h-4 w-4" />
+                  View History
+                </Link>
+              </div>
+            </div>
+
+            {/* Bottom strip: at-a-glance KPIs (no empty whitespace) */}
+            <div className="relative z-10 mt-auto grid gap-4 border-t border-border/50 pt-6 sm:grid-cols-2 lg:grid-cols-4">
+              <HeroStat
+                eyebrow="Avg. confidence · 30d"
+                value="84.2%"
+                hint="Across all classified posts"
+                icon={<Zap className="h-4 w-4" />}
+              />
+              <HeroStat
+                eyebrow="High-tier rate"
+                value="23.6%"
+                hint="Posts predicted as HIGH"
+                icon={<TrendingUp className="h-4 w-4" />}
+              />
+              <HeroStat
+                eyebrow="Predictions this month"
+                value="12,847"
+                hint="+18.4% vs last month"
+                icon={<Sparkles className="h-4 w-4" />}
+              />
+              <HeroStat
+                eyebrow="Personal models live"
+                value={`${personalCount} / ${BRANDS.length}`}
+                hint="Brands graduated from fallback"
+                icon={<Cpu className="h-4 w-4" />}
+              />
             </div>
           </div>
         </section>
