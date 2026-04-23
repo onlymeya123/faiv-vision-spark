@@ -321,7 +321,7 @@ function DashboardPage() {
                 Personal Model activates at 200 samples. Below threshold, predictions fall back to the niche model.
               </p>
             </div>
-            <Link to="/admin" className="text-xs font-medium text-primary hover:underline">
+            <Link to="/niches" className="text-xs font-medium text-primary hover:underline">
               Manage brands →
             </Link>
           </div>
@@ -389,21 +389,21 @@ function DashboardPage() {
                   to: "/predict" as const,
                   icon: Sparkles,
                   title: "New Prediction",
-                  desc: "Score a single post (Reels / Carousel / Single Image)",
+                  desc: "Score one upcoming post in seconds",
                   glow: "var(--primary)",
                 },
                 {
-                  to: "/diagnose" as const,
-                  icon: Activity,
-                  title: "Diagnose Factors",
-                  desc: "Inspect MDI feature importance",
+                  to: "/calendar" as const,
+                  icon: CalendarRange,
+                  title: "Content Calendar",
+                  desc: "Upload an Excel file to score in batch",
                   glow: "var(--secondary-glow)",
                 },
                 {
-                  to: "/suggest" as const,
-                  icon: Lightbulb,
-                  title: "Recommendation Engine (TRE + AI)",
-                  desc: "Local templates, optionally enriched by AI",
+                  to: "/history" as const,
+                  icon: History,
+                  title: "Prediction History",
+                  desc: "Browse and filter past predictions",
                   glow: "var(--success)",
                 },
               ].map((a, i) => (
@@ -442,7 +442,7 @@ function DashboardPage() {
                   Recent predictions
                 </h3>
               </div>
-              <Link to="/diagnose" className="text-xs font-medium text-primary hover:underline">
+              <Link to="/history" className="text-xs font-medium text-primary hover:underline">
                 View all →
               </Link>
             </div>
@@ -476,5 +476,32 @@ function DashboardPage() {
         </section>
       </div>
     </AppShell>
+  );
+}
+
+function HeroStat({
+  eyebrow,
+  value,
+  hint,
+  icon,
+}: {
+  eyebrow: string;
+  value: string;
+  hint: string;
+  icon: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-2xl border border-border bg-surface/40 p-4 backdrop-blur-xl transition-all hover:border-border-strong">
+      <div className="flex items-center justify-between">
+        <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+          {eyebrow}
+        </div>
+        <span className="text-primary">{icon}</span>
+      </div>
+      <div className="mt-2 font-display text-2xl font-semibold tracking-tight md:text-3xl">
+        {value}
+      </div>
+      <div className="mt-1 text-[11px] text-muted-foreground">{hint}</div>
+    </div>
   );
 }
