@@ -19,9 +19,9 @@ const NAV_GROUPS = [
     label: "Workspace",
     items: [
       { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-      { to: "/predict", label: "New Prediction", icon: Sparkles },
-      { to: "/calendar", label: "Content Calendar", icon: CalendarRange },
-      { to: "/history", label: "Prediction History", icon: History },
+      { to: "/predict", label: "Prediction", icon: Sparkles },
+      { to: "/calendar", label: "Calendar", icon: CalendarRange },
+      { to: "/history", label: "History", icon: History },
     ],
   },
   {

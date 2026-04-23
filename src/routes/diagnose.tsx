@@ -1,9 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { SectionHeader } from "@/components/SectionHeader";
 import { FlowStepper } from "@/components/FlowStepper";
 import { FEATURE_IMPORTANCE } from "@/lib/mock-data";
-import { Info, BarChart3 } from "lucide-react";
+import { Info, BarChart3, Lightbulb, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/diagnose")({
   head: () => ({
@@ -137,6 +137,35 @@ function DiagnosePage() {
               <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{c.body}</p>
             </div>
           ))}
+        </section>
+
+        {/* Next step CTA → Suggest */}
+        <section className="mt-10 overflow-hidden rounded-2xl border border-border-strong bg-gradient-to-br from-surface via-surface-2 to-surface p-6 md:p-8">
+          <div className="flex flex-col items-start justify-between gap-5 md:flex-row md:items-center">
+            <div className="flex items-start gap-4">
+              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[color-mix(in_oklab,var(--primary)_14%,transparent)]">
+                <Lightbulb className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <div className="text-[11px] uppercase tracking-[0.18em] text-primary">
+                  Next step
+                </div>
+                <h3 className="mt-1 font-display text-xl font-semibold">
+                  Turn these signals into recommendations
+                </h3>
+                <p className="mt-1 max-w-xl text-sm text-muted-foreground">
+                  See concrete adjustments to caption length, hashtags, posting time and CTA based on this niche's feature importance.
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/suggest"
+              className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow-purple)] transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
+              Continue to Suggest
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
         </section>
       </div>
     </AppShell>
