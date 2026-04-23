@@ -489,7 +489,7 @@ function HeroStat({
   eyebrow: string;
   value: string;
   hint: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
 }) {
   return (
     <div className="rounded-2xl border border-border bg-surface/40 p-4 backdrop-blur-xl transition-all hover:border-border-strong">
