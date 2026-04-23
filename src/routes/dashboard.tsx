@@ -22,10 +22,12 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Sparkles,
-  Activity,
-  Lightbulb,
+  CalendarRange,
+  History,
   Cpu,
   AlertTriangle,
+  TrendingUp,
+  Zap,
 } from "lucide-react";
 import { PostingHeatmap } from "@/components/PostingHeatmap";
 
