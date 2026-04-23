@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { SectionHeader } from "@/components/SectionHeader";
@@ -25,10 +24,8 @@ import {
   Sparkles,
   CalendarRange,
   History,
-  Cpu,
   AlertTriangle,
   TrendingUp,
-  Zap,
 } from "lucide-react";
 import { PostingHeatmap } from "@/components/PostingHeatmap";
 
@@ -473,32 +470,5 @@ function DashboardPage() {
         </section>
       </div>
     </AppShell>
-  );
-}
-
-function HeroStat({
-  eyebrow,
-  value,
-  hint,
-  icon,
-}: {
-  eyebrow: string;
-  value: string;
-  hint: string;
-  icon: ReactNode;
-}) {
-  return (
-    <div className="rounded-2xl border border-border bg-surface/40 p-4 backdrop-blur-xl transition-all hover:border-border-strong">
-      <div className="flex items-center justify-between">
-        <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-          {eyebrow}
-        </div>
-        <span className="text-primary">{icon}</span>
-      </div>
-      <div className="mt-2 font-display text-2xl font-semibold tracking-tight md:text-3xl">
-        {value}
-      </div>
-      <div className="mt-1 text-[11px] text-muted-foreground">{hint}</div>
-    </div>
   );
 }
