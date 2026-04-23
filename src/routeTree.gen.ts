@@ -12,9 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SuggestRouteImport } from './routes/suggest'
 import { Route as ResultRouteImport } from './routes/result'
 import { Route as PredictRouteImport } from './routes/predict'
+import { Route as NichesRouteImport } from './routes/niches'
+import { Route as ModelHealthRouteImport } from './routes/model-health'
+import { Route as HistoryRouteImport } from './routes/history'
 import { Route as DiagnoseRouteImport } from './routes/diagnose'
 import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as AdminRouteImport } from './routes/admin'
+import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SuggestRoute = SuggestRouteImport.update({
@@ -32,6 +35,21 @@ const PredictRoute = PredictRouteImport.update({
   path: '/predict',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NichesRoute = NichesRouteImport.update({
+  id: '/niches',
+  path: '/niches',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ModelHealthRoute = ModelHealthRouteImport.update({
+  id: '/model-health',
+  path: '/model-health',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HistoryRoute = HistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DiagnoseRoute = DiagnoseRouteImport.update({
   id: '/diagnose',
   path: '/diagnose',
@@ -42,9 +60,9 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const CalendarRoute = CalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -55,18 +73,24 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/calendar': typeof CalendarRoute
   '/dashboard': typeof DashboardRoute
   '/diagnose': typeof DiagnoseRoute
+  '/history': typeof HistoryRoute
+  '/model-health': typeof ModelHealthRoute
+  '/niches': typeof NichesRoute
   '/predict': typeof PredictRoute
   '/result': typeof ResultRoute
   '/suggest': typeof SuggestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/calendar': typeof CalendarRoute
   '/dashboard': typeof DashboardRoute
   '/diagnose': typeof DiagnoseRoute
+  '/history': typeof HistoryRoute
+  '/model-health': typeof ModelHealthRoute
+  '/niches': typeof NichesRoute
   '/predict': typeof PredictRoute
   '/result': typeof ResultRoute
   '/suggest': typeof SuggestRoute
@@ -74,9 +98,12 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/calendar': typeof CalendarRoute
   '/dashboard': typeof DashboardRoute
   '/diagnose': typeof DiagnoseRoute
+  '/history': typeof HistoryRoute
+  '/model-health': typeof ModelHealthRoute
+  '/niches': typeof NichesRoute
   '/predict': typeof PredictRoute
   '/result': typeof ResultRoute
   '/suggest': typeof SuggestRoute
@@ -85,27 +112,36 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/admin'
+    | '/calendar'
     | '/dashboard'
     | '/diagnose'
+    | '/history'
+    | '/model-health'
+    | '/niches'
     | '/predict'
     | '/result'
     | '/suggest'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
+    | '/calendar'
     | '/dashboard'
     | '/diagnose'
+    | '/history'
+    | '/model-health'
+    | '/niches'
     | '/predict'
     | '/result'
     | '/suggest'
   id:
     | '__root__'
     | '/'
-    | '/admin'
+    | '/calendar'
     | '/dashboard'
     | '/diagnose'
+    | '/history'
+    | '/model-health'
+    | '/niches'
     | '/predict'
     | '/result'
     | '/suggest'
@@ -113,9 +149,12 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
+  CalendarRoute: typeof CalendarRoute
   DashboardRoute: typeof DashboardRoute
   DiagnoseRoute: typeof DiagnoseRoute
+  HistoryRoute: typeof HistoryRoute
+  ModelHealthRoute: typeof ModelHealthRoute
+  NichesRoute: typeof NichesRoute
   PredictRoute: typeof PredictRoute
   ResultRoute: typeof ResultRoute
   SuggestRoute: typeof SuggestRoute
@@ -144,6 +183,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PredictRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/niches': {
+      id: '/niches'
+      path: '/niches'
+      fullPath: '/niches'
+      preLoaderRoute: typeof NichesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/model-health': {
+      id: '/model-health'
+      path: '/model-health'
+      fullPath: '/model-health'
+      preLoaderRoute: typeof ModelHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/diagnose': {
       id: '/diagnose'
       path: '/diagnose'
@@ -158,11 +218,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
+    '/calendar': {
+      id: '/calendar'
+      path: '/calendar'
+      fullPath: '/calendar'
+      preLoaderRoute: typeof CalendarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -177,9 +237,12 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
+  CalendarRoute: CalendarRoute,
   DashboardRoute: DashboardRoute,
   DiagnoseRoute: DiagnoseRoute,
+  HistoryRoute: HistoryRoute,
+  ModelHealthRoute: ModelHealthRoute,
+  NichesRoute: NichesRoute,
   PredictRoute: PredictRoute,
   ResultRoute: ResultRoute,
   SuggestRoute: SuggestRoute,

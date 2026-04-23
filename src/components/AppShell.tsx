@@ -3,9 +3,10 @@ import { Link, useLocation } from "@tanstack/react-router";
 import {
   LayoutDashboard,
   Sparkles,
-  Activity,
-  Lightbulb,
-  Shield,
+  CalendarRange,
+  History,
+  Building2,
+  Cpu,
   Search,
   Bell,
   Sun,
@@ -13,12 +14,23 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const NAV = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/predict", label: "Predict", icon: Sparkles },
-  { to: "/diagnose", label: "Diagnose", icon: Activity },
-  { to: "/suggest", label: "Suggest", icon: Lightbulb },
-  { to: "/admin", label: "Admin", icon: Shield },
+const NAV_GROUPS = [
+  {
+    label: "Workspace",
+    items: [
+      { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { to: "/predict", label: "New Prediction", icon: Sparkles },
+      { to: "/calendar", label: "Content Calendar", icon: CalendarRange },
+      { to: "/history", label: "Prediction History", icon: History },
+    ],
+  },
+  {
+    label: "Administrator",
+    items: [
+      { to: "/niches", label: "Niche Management", icon: Building2 },
+      { to: "/model-health", label: "Model Health", icon: Cpu },
+    ],
+  },
 ] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -73,45 +85,49 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
           </div>
 
-          <nav className="flex-1 px-3">
-            <div className="px-2 pb-2 text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground/70">
-              Workspace
-            </div>
-            <ul className="space-y-1">
-              {NAV.map((item) => {
-                const active =
-                  location.pathname === item.to ||
-                  (item.to !== "/dashboard" && location.pathname.startsWith(item.to));
-                const Icon = item.icon;
-                return (
-                  <li key={item.to}>
-                    <Link
-                      to={item.to}
-                      className={cn(
-                        "group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all duration-200",
-                        active
-                          ? "bg-[color-mix(in_oklab,var(--primary)_12%,transparent)] text-foreground"
-                          : "text-muted-foreground hover:bg-surface-2 hover:text-foreground"
-                      )}
-                    >
-                      {active && (
-                        <span
-                          aria-hidden
-                          className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full bg-primary shadow-[0_0_12px_var(--primary)]"
-                        />
-                      )}
-                      <Icon
-                        className={cn(
-                          "h-[17px] w-[17px] shrink-0 transition-colors",
-                          active ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-                        )}
-                      />
-                      <span className="font-medium">{item.label}</span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
+          <nav className="flex-1 overflow-y-auto px-3">
+            {NAV_GROUPS.map((group) => (
+              <div key={group.label} className="mb-4">
+                <div className="px-2 pb-2 text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground/70">
+                  {group.label}
+                </div>
+                <ul className="space-y-1">
+                  {group.items.map((item) => {
+                    const active =
+                      location.pathname === item.to ||
+                      (item.to !== "/dashboard" && location.pathname.startsWith(item.to));
+                    const Icon = item.icon;
+                    return (
+                      <li key={item.to}>
+                        <Link
+                          to={item.to}
+                          className={cn(
+                            "group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all duration-200",
+                            active
+                              ? "bg-[color-mix(in_oklab,var(--primary)_12%,transparent)] text-foreground"
+                              : "text-muted-foreground hover:bg-surface-2 hover:text-foreground"
+                          )}
+                        >
+                          {active && (
+                            <span
+                              aria-hidden
+                              className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full bg-primary shadow-[0_0_12px_var(--primary)]"
+                            />
+                          )}
+                          <Icon
+                            className={cn(
+                              "h-[17px] w-[17px] shrink-0 transition-colors",
+                              active ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                            )}
+                          />
+                          <span className="font-medium">{item.label}</span>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
           </nav>
 
           <div className="m-3 rounded-xl border border-border-strong bg-gradient-to-br from-surface-2 to-surface p-4">
@@ -120,10 +136,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
               </span>
-              <div className="text-xs font-medium">Inference online</div>
+              <div className="text-xs font-medium">All systems online</div>
             </div>
             <div className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-              FastAPI · 5 active models
+              Prediction service is healthy
             </div>
           </div>
         </aside>
