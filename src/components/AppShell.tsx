@@ -3,9 +3,10 @@ import { Link, useLocation } from "@tanstack/react-router";
 import {
   LayoutDashboard,
   Sparkles,
-  Activity,
-  Lightbulb,
-  Shield,
+  CalendarRange,
+  History,
+  Building2,
+  Cpu,
   Search,
   Bell,
   Sun,
@@ -13,12 +14,23 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const NAV = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/predict", label: "Predict", icon: Sparkles },
-  { to: "/diagnose", label: "Diagnose", icon: Activity },
-  { to: "/suggest", label: "Suggest", icon: Lightbulb },
-  { to: "/admin", label: "Admin", icon: Shield },
+const NAV_GROUPS = [
+  {
+    label: "Workspace",
+    items: [
+      { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { to: "/predict", label: "New Prediction", icon: Sparkles },
+      { to: "/calendar", label: "Content Calendar", icon: CalendarRange },
+      { to: "/history", label: "Prediction History", icon: History },
+    ],
+  },
+  {
+    label: "Administrator",
+    items: [
+      { to: "/niches", label: "Niche Management", icon: Building2 },
+      { to: "/model-health", label: "Model Health", icon: Cpu },
+    ],
+  },
 ] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
