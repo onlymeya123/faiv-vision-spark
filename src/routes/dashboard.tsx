@@ -49,8 +49,8 @@ function DashboardPage() {
   return (
     <AppShell>
       <div className="px-5 py-6 md:px-10 md:py-8">
-        {/* HERO — full viewport, no empty zones */}
-        <section className="relative mb-10 flex min-h-[calc(100vh-7rem)] overflow-hidden rounded-3xl border border-border-strong bg-gradient-to-br from-surface via-surface-2 to-surface p-1">
+        {/* HERO — fills viewport, no duplicate KPI strip */}
+        <section className="relative mb-10 flex min-h-[calc(100vh-6rem)] overflow-hidden rounded-3xl border border-border-strong bg-gradient-to-br from-surface via-surface-2 to-surface p-1">
           <div className="relative flex w-full flex-col overflow-hidden rounded-[22px] p-6 md:p-12">
             <div aria-hidden className="absolute inset-0 grid-bg opacity-40" />
             <div
@@ -92,8 +92,8 @@ function DashboardPage() {
               </div>
             </div>
 
-            {/* Centered headline + sub */}
-            <div className="relative z-10 my-auto max-w-3xl py-10">
+            {/* Centered headline + sub — vertically anchored to fill space */}
+            <div className="relative z-10 my-auto max-w-3xl py-6">
               <h1 className="font-display text-[34px] font-semibold leading-[1.05] tracking-tight md:text-[56px]">
                 Good morning,{" "}
                 <span className="text-gradient-primary">Alex</span>.
@@ -131,32 +131,28 @@ function DashboardPage() {
               </div>
             </div>
 
-            {/* Bottom strip: at-a-glance KPIs (no empty whitespace) */}
-            <div className="relative z-10 mt-auto grid gap-4 border-t border-border/50 pt-6 sm:grid-cols-2 lg:grid-cols-4">
-              <HeroStat
-                eyebrow="Avg. confidence · 30d"
-                value="84.2%"
-                hint="Across all classified posts"
-                icon={<Zap className="h-4 w-4" />}
-              />
-              <HeroStat
-                eyebrow="High-tier rate"
-                value="23.6%"
-                hint="Posts predicted as HIGH"
-                icon={<TrendingUp className="h-4 w-4" />}
-              />
-              <HeroStat
-                eyebrow="Predictions this month"
-                value="12,847"
-                hint="+18.4% vs last month"
-                icon={<Sparkles className="h-4 w-4" />}
-              />
-              <HeroStat
-                eyebrow="Personal models live"
-                value={`${personalCount} / ${BRANDS.length}`}
-                hint="Brands graduated from fallback"
-                icon={<Cpu className="h-4 w-4" />}
-              />
+            {/* Bottom row: scroll cue + brand snapshot strip (no duplicated KPIs) */}
+            <div className="relative z-10 mt-auto flex flex-wrap items-end justify-between gap-4 border-t border-border/50 pt-6">
+              <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                <span className="inline-block h-px w-8 bg-border-strong" />
+                Scroll for performance details
+              </div>
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[11px] text-muted-foreground">
+                <span>
+                  Personal models live{" "}
+                  <span className="font-mono text-foreground">{personalCount}/{BRANDS.length}</span>
+                </span>
+                <span className="hidden h-3 w-px bg-border-strong sm:inline-block" />
+                <span>
+                  Last training{" "}
+                  <span className="font-mono text-foreground">12h ago</span>
+                </span>
+                <span className="hidden h-3 w-px bg-border-strong sm:inline-block" />
+                <span>
+                  Predictions today{" "}
+                  <span className="font-mono text-foreground">428</span>
+                </span>
+              </div>
             </div>
           </div>
         </section>
