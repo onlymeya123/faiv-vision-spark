@@ -102,23 +102,26 @@ function ModelRow({ m, i }: { m: MlModel; i: number }) {
       className="border-b border-border/60 transition-colors last:border-0 hover:bg-surface-2/60"
       style={{ animation: `slide-up 0.4s ${i * 60}ms both` }}
     >
-      <td className="px-6 py-4">
-        <div className="flex items-center gap-3">
+      <td className="px-6 py-5">
+        <div className="flex items-center gap-4">
           <div
-            className="grid h-9 w-9 place-items-center rounded-lg border border-border-strong"
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-border-strong"
             style={{
               background: isPersonal
                 ? "color-mix(in oklab, var(--accent-lime) 14%, transparent)"
                 : "color-mix(in oklab, var(--primary) 14%, transparent)",
+              boxShadow: isPersonal
+                ? "inset 0 0 16px color-mix(in oklab, var(--accent-lime) 22%, transparent)"
+                : "inset 0 0 16px color-mix(in oklab, var(--primary) 22%, transparent)",
             }}
           >
             {isPersonal ? (
-              <Sparkles className="h-4 w-4 text-[oklch(0.40_0.18_130)] dark:text-[oklch(0.85_0.20_130)]" />
+              <Sparkles className="h-[18px] w-[18px] text-[oklch(0.40_0.18_130)] dark:text-[oklch(0.85_0.20_130)]" />
             ) : (
-              <Cpu className="h-4 w-4 text-primary" />
+              <Cpu className="h-[18px] w-[18px] text-primary" />
             )}
           </div>
-          <span className="font-mono text-sm font-medium">{m.name}</span>
+          <span className="font-mono text-sm font-medium leading-tight">{m.name}</span>
         </div>
       </td>
       <td className="px-6 py-4 text-xs text-muted-foreground">{m.niche}</td>
