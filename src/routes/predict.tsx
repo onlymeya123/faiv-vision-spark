@@ -276,10 +276,10 @@ function Panel({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-border bg-surface/60 p-6 backdrop-blur-xl">
-      <div className="mb-5 flex items-baseline justify-between gap-3">
-        <h3 className="font-display text-lg font-semibold tracking-tight">{title}</h3>
-        {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
+    <div className="rounded-2xl border border-border bg-surface/70 p-6 backdrop-blur-xl">
+      <div className="mb-5 border-b border-border pb-4">
+        <h3 className="font-display text-base font-semibold tracking-tight">{title}</h3>
+        {subtitle && <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">{subtitle}</p>}
       </div>
       {children}
     </div>
@@ -288,7 +288,7 @@ function Panel({
 
 function Label({ children }: { children: React.ReactNode }) {
   return (
-    <div className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+    <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/80">
       {children}
     </div>
   );
@@ -296,12 +296,12 @@ function Label({ children }: { children: React.ReactNode }) {
 
 function Metric({ label, value, hint }: { label: string; value: string; hint: string }) {
   return (
-    <div className="rounded-xl border border-border bg-surface-2 p-3">
-      <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+    <div className="rounded-xl border border-border bg-surface-2/80 p-3.5">
+      <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground/70">
         {label}
       </div>
-      <div className="mt-1.5 font-display text-2xl font-semibold tabular-nums">{value}</div>
-      <div className="mt-0.5 text-[11px] text-muted-foreground">{hint}</div>
+      <div className="mt-2 font-display text-2xl font-semibold tabular-nums tracking-tight">{value}</div>
+      <div className="mt-0.5 text-[10px] text-muted-foreground">{hint}</div>
     </div>
   );
 }

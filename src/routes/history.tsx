@@ -117,7 +117,7 @@ function HistoryPage() {
         </section>
 
         {/* Table */}
-        <section className="mt-6 overflow-hidden rounded-2xl border border-border bg-surface/60 backdrop-blur-xl">
+        <section className="mt-6 overflow-hidden rounded-2xl border border-border bg-surface/70 backdrop-blur-xl">
           <div className="flex items-center justify-between border-b border-border p-5">
             <div className="flex items-center gap-2">
               <Filter className="h-4 w-4 text-primary" />
