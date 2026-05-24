@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { AppShell } from "@/components/AppShell";
+"use client";
+
 import { SectionHeader } from "@/components/SectionHeader";
 import { MODELS, type MlModel } from "@/lib/mock-data";
 import {
@@ -11,84 +11,68 @@ import {
   TrendingDown,
 } from "lucide-react";
 
-export const Route = createFileRoute("/model-health")({
-  head: () => ({
-    meta: [
-      { title: "Model Health — FAIV Predict" },
-      {
-        name: "description",
-        content:
-          "Monitor rolling accuracy, detect concept drift, and trigger retraining for niche and personal models.",
-      },
-    ],
-  }),
-  component: ModelHealthPage,
-});
-
-function ModelHealthPage() {
+export default function ModelHealthPage() {
   return (
-    <AppShell>
-      <div className="px-5 py-8 md:px-10 md:py-10">
-        <SectionHeader
-          eyebrow="Model health"
-          title="Performance & drift"
-          description="Live view of every model in the workspace. Drift alerts trigger when rolling accuracy drops more than 15 points below baseline."
-          actions={
-            <button
-              type="button"
-              className="inline-flex items-center gap-2 rounded-xl border border-border-strong bg-surface px-4 py-2 text-sm font-semibold text-foreground transition-all hover:bg-surface-2 active:scale-[0.98]"
-            >
-              <RefreshCw className="h-4 w-4" />
-              Trigger manual retrain
-            </button>
-          }
+    <div className="px-5 py-8 md:px-10 md:py-10">
+      <SectionHeader
+        eyebrow="Model health"
+        title="Performance & drift"
+        description="Live view of every model in the workspace. Drift alerts trigger when rolling accuracy drops more than 15 points below baseline."
+        actions={
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 rounded-xl border border-border-strong bg-surface px-4 py-2 text-sm font-semibold text-foreground transition-all hover:bg-surface-2 active:scale-[0.98]"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Trigger manual retrain
+          </button>
+        }
+      />
+
+      <section className="mt-8 grid gap-4 sm:grid-cols-3">
+        <SummaryCard
+          label="Active models"
+          value={MODELS.filter((m) => m.is_active).length.toString()}
+          tone="primary"
         />
+        <SummaryCard
+          label="Average rolling accuracy"
+          value={`${(
+            MODELS.reduce((s, m) => s + m.rollingAccuracy, 0) / MODELS.length
+          ).toFixed(1)}%`}
+          tone="lime"
+        />
+        <SummaryCard
+          label="Drift alerts"
+          value={MODELS.filter((m) => m.baselineAccuracy - m.rollingAccuracy > 15).length.toString()}
+          tone="destructive"
+        />
+      </section>
 
-        <section className="mt-8 grid gap-4 sm:grid-cols-3">
-          <SummaryCard
-            label="Active models"
-            value={MODELS.filter((m) => m.is_active).length.toString()}
-            tone="primary"
-          />
-          <SummaryCard
-            label="Average rolling accuracy"
-            value={`${(
-              MODELS.reduce((s, m) => s + m.rollingAccuracy, 0) / MODELS.length
-            ).toFixed(1)}%`}
-            tone="lime"
-          />
-          <SummaryCard
-            label="Drift alerts"
-            value={MODELS.filter((m) => m.baselineAccuracy - m.rollingAccuracy > 15).length.toString()}
-            tone="destructive"
-          />
-        </section>
-
-        <section className="mt-6 overflow-hidden rounded-2xl border border-border bg-surface/60 backdrop-blur-xl">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-                  <th className="px-6 py-4 font-medium">Model</th>
-                  <th className="px-6 py-4 font-medium">Niche</th>
-                  <th className="px-6 py-4 font-medium">Version</th>
-                  <th className="px-6 py-4 font-medium">Baseline</th>
-                  <th className="px-6 py-4 font-medium">30d rolling</th>
-                  <th className="px-6 py-4 font-medium">Trend</th>
-                  <th className="px-6 py-4 font-medium">Status</th>
-                  <th className="px-6 py-4 font-medium" />
-                </tr>
-              </thead>
-              <tbody>
-                {MODELS.map((m, i) => (
-                  <ModelRow key={m.id} m={m} i={i} />
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      </div>
-    </AppShell>
+      <section className="mt-6 overflow-hidden rounded-2xl border border-border bg-surface/60 backdrop-blur-xl">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border text-left text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                <th className="px-6 py-4 font-medium">Model</th>
+                <th className="px-6 py-4 font-medium">Niche</th>
+                <th className="px-6 py-4 font-medium">Version</th>
+                <th className="px-6 py-4 font-medium">Baseline</th>
+                <th className="px-6 py-4 font-medium">30d rolling</th>
+                <th className="px-6 py-4 font-medium">Trend</th>
+                <th className="px-6 py-4 font-medium">Status</th>
+                <th className="px-6 py-4 font-medium" />
+              </tr>
+            </thead>
+            <tbody>
+              {MODELS.map((m, i) => (
+                <ModelRow key={m.id} m={m} i={i} />
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
   );
 }
 
@@ -108,11 +92,11 @@ function ModelRow({ m, i }: { m: MlModel; i: number }) {
             className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-border-strong"
             style={{
               background: isPersonal
-                ? "color-mix(in oklab, var(--accent-lime) 14%, transparent)"
-                : "color-mix(in oklab, var(--primary) 14%, transparent)",
+                ? "color-mix(in oklab, hsl(var(--accent-lime)) 14%, transparent)"
+                : "color-mix(in oklab, hsl(var(--primary)) 14%, transparent)",
               boxShadow: isPersonal
-                ? "inset 0 0 16px color-mix(in oklab, var(--accent-lime) 22%, transparent)"
-                : "inset 0 0 16px color-mix(in oklab, var(--primary) 22%, transparent)",
+                ? "inset 0 0 16px color-mix(in oklab, hsl(var(--accent-lime)) 22%, transparent)"
+                : "inset 0 0 16px color-mix(in oklab, hsl(var(--primary)) 22%, transparent)",
             }}
           >
             {isPersonal ? (
@@ -138,10 +122,10 @@ function ModelRow({ m, i }: { m: MlModel; i: number }) {
               className="h-full rounded-full"
               style={{
                 width: `${m.rollingAccuracy}%`,
-                background: drift ? "var(--destructive)" : "var(--gradient-primary)",
+                background: drift ? "hsl(var(--destructive))" : "var(--gradient-primary)",
                 boxShadow: drift
-                  ? "0 0 8px var(--destructive)"
-                  : "0 0 8px var(--primary)",
+                  ? "0 0 8px hsl(var(--destructive))"
+                  : "0 0 8px hsl(var(--primary))",
               }}
             />
           </div>
@@ -157,13 +141,13 @@ function ModelRow({ m, i }: { m: MlModel; i: number }) {
         {drift ? (
           <span
             role="alert"
-            className="inline-flex items-center gap-1.5 rounded-full bg-[color-mix(in_oklab,var(--destructive)_18%,transparent)] px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-destructive ring-1 ring-inset ring-[color-mix(in_oklab,var(--destructive)_45%,transparent)] animate-pulse"
+            className="inline-flex items-center gap-1.5 rounded-full bg-[color-mix(in_oklab,hsl(var(--destructive))_18%,transparent)] px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-destructive ring-1 ring-inset ring-[color-mix(in_oklab,hsl(var(--destructive))_45%,transparent)] animate-pulse"
           >
             <TrendingDown className="h-3 w-3" />
             Drift −{drop.toFixed(1)}pt
           </span>
         ) : m.is_active ? (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[color-mix(in_oklab,var(--success)_15%,transparent)] px-2 py-1 text-[11px] font-medium text-[oklch(0.85_0.18_155)]">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[color-mix(in_oklab,hsl(var(--success))_15%,transparent)] px-2 py-1 text-[11px] font-medium text-[oklch(0.85_0.18_155)]">
             <CheckCircle2 className="h-3 w-3" /> Active
           </span>
         ) : (
@@ -207,7 +191,7 @@ function Sparkline({ values, drift }: { values: number[]; drift: boolean }) {
       return `${x.toFixed(1)},${y.toFixed(1)}`;
     })
     .join(" ");
-  const stroke = drift ? "var(--destructive)" : "var(--primary)";
+  const stroke = drift ? "hsl(var(--destructive))" : "hsl(var(--primary))";
   return (
     <svg width={w} height={h} className="overflow-visible">
       <polyline
@@ -234,16 +218,16 @@ function SummaryCard({
 }) {
   const bg =
     tone === "primary"
-      ? "color-mix(in oklab, var(--primary) 8%, var(--surface))"
+      ? "color-mix(in oklab, hsl(var(--primary)) 8%, hsl(var(--surface)))"
       : tone === "lime"
-      ? "color-mix(in oklab, var(--accent-lime) 8%, var(--surface))"
-      : "color-mix(in oklab, var(--destructive) 8%, var(--surface))";
+      ? "color-mix(in oklab, hsl(var(--accent-lime)) 8%, hsl(var(--surface)))"
+      : "color-mix(in oklab, hsl(var(--destructive)) 8%, hsl(var(--surface)))";
   const dot =
     tone === "primary"
-      ? "var(--primary)"
+      ? "hsl(var(--primary))"
       : tone === "lime"
-      ? "var(--accent-lime)"
-      : "var(--destructive)";
+      ? "hsl(var(--accent-lime))"
+      : "hsl(var(--destructive))";
   return (
     <div
       className="rounded-2xl border border-border p-5"

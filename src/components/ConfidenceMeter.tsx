@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 
@@ -35,8 +37,8 @@ export function ConfidenceMeter({
       <svg width={size} height={size} className="-rotate-90">
         <defs>
           <linearGradient id="conf-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="oklch(0.86 0.16 195)" />
-            <stop offset="100%" stopColor="oklch(0.78 0.18 130)" />
+            <stop offset="0%" stopColor="hsl(210 55% 64%)" />
+            <stop offset="100%" stopColor="hsl(95 75% 68%)" />
           </linearGradient>
         </defs>
         <circle
@@ -44,7 +46,7 @@ export function ConfidenceMeter({
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="color-mix(in oklab, var(--foreground) 8%, transparent)"
+          stroke="color-mix(in oklab, hsl(var(--foreground)) 8%, transparent)"
           strokeWidth={stroke}
         />
         <motion.circle
@@ -56,7 +58,7 @@ export function ConfidenceMeter({
           strokeWidth={stroke}
           strokeLinecap="round"
           strokeDasharray={circumference}
-          style={{ strokeDashoffset: dash, filter: "drop-shadow(0 0 12px oklch(0.78 0.18 198 / 0.6))" }}
+          style={{ strokeDashoffset: dash, filter: "drop-shadow(0 0 12px hsl(210 55% 64% / 0.6))" }}
         />
       </svg>
       <div className="absolute inset-0 grid place-items-center text-center">

@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Hash, AtSign, Smile, MessageCircleQuestion, Target, AlertTriangle } from "lucide-react";

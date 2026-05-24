@@ -1,4 +1,7 @@
-import { Link, useLocation } from "@tanstack/react-router";
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Sparkles, Gauge, Activity, Lightbulb, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -10,7 +13,7 @@ const STEPS = [
 ] as const;
 
 export function FlowStepper({ className }: { className?: string }) {
-  const { pathname } = useLocation();
+  const pathname = usePathname();
   const currentIdx = Math.max(
     0,
     STEPS.findIndex((s) => pathname.startsWith(s.to)),
@@ -31,7 +34,7 @@ export function FlowStepper({ className }: { className?: string }) {
         return (
           <div key={step.to} className="flex items-center gap-1">
             <Link
-              to={step.to}
+              href={step.to}
               className={cn(
                 "group inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all",
                 isActive
@@ -47,7 +50,7 @@ export function FlowStepper({ className }: { className?: string }) {
                   isActive
                     ? "bg-white/20"
                     : isDone
-                    ? "bg-[color-mix(in_oklab,var(--accent-lime)_40%,transparent)] text-foreground"
+                    ? "bg-[color-mix(in_oklab,hsl(var(--accent-lime))_40%,transparent)] text-foreground"
                     : "bg-surface-2 text-muted-foreground",
                 )}
               >

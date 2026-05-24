@@ -1,0 +1,162 @@
+"use client";
+
+import Link from "next/link";
+import { SectionHeader } from "@/components/SectionHeader";
+import { FlowStepper } from "@/components/FlowStepper";
+import { FEATURE_IMPORTANCE } from "@/lib/mock-data";
+import { Info, BarChart3, Lightbulb, ArrowRight } from "lucide-react";
+
+export default function DiagnosePage() {
+  const max = Math.max(...FEATURE_IMPORTANCE.map((f) => f.importance));
+  const total = FEATURE_IMPORTANCE.reduce((s, f) => s + f.importance, 0);
+
+  return (
+    <div className="px-5 py-8 md:px-10 md:py-10">
+      <div className="mb-6">
+        <FlowStepper />
+      </div>
+      <SectionHeader
+        eyebrow="Diagnose"
+        title="Feature importance (MDI)"
+        description="Mean Decrease in Impurity — proportion of impurity reduction each feature contributes across all trees in the forest. Always non-negative; sums to 1.0."
+        actions={
+          <div className="flex items-center gap-2 rounded-lg border border-border bg-surface-2 px-3 py-1.5 text-xs text-muted-foreground">
+            <Info className="h-3.5 w-3.5" />
+            MDI · scikit-learn feature_importances_
+          </div>
+        }
+      />
+
+      <section className="mt-10 grid gap-6 lg:grid-cols-[1.6fr_1fr]">
+        <div className="rounded-2xl border border-border bg-surface/60 p-6 backdrop-blur-xl">
+          <div className="mb-6 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 text-primary" />
+              <h3 className="font-display text-lg font-semibold">Horizontal bar chart</h3>
+            </div>
+            <span className="rounded-full border border-border bg-surface-2 px-2.5 py-1 font-mono text-[10px] text-muted-foreground">
+              Σ = {(total * 100).toFixed(0)}%
+            </span>
+          </div>
+
+          <div className="space-y-4">
+            {FEATURE_IMPORTANCE.map((f, i) => {
+              const pct = (f.importance / max) * 100;
+              return (
+                <div
+                  key={f.key}
+                  style={{ animation: `slide-up 0.5s ${i * 60}ms both` }}
+                >
+                  <div className="mb-1.5 flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{f.feature}</span>
+                      <span className="rounded border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
+                        {f.key}
+                      </span>
+                    </div>
+                    <span className="font-mono tabular-nums text-foreground">
+                      {(f.importance * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="h-3 overflow-hidden rounded-full bg-surface-3">
+                    <div
+                      className="h-full rounded-full transition-all duration-700"
+                      style={{
+                        width: `${pct}%`,
+                        background:
+                          "linear-gradient(90deg, hsl(var(--primary)), color-mix(in oklab, hsl(var(--primary)) 55%, transparent))",
+                        boxShadow: "0 0 12px hsl(var(--primary))",
+                      }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-border bg-surface/60 p-6 backdrop-blur-xl">
+          <h3 className="font-display text-lg font-semibold">About MDI</h3>
+          <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+            MDI measures how often each feature is used to split nodes across all decision trees,
+            weighted by the impurity reduction at each split. Values are always between 0 and 1
+            and always positive — there is no concept of a feature &quot;reducing&quot; the score, only
+            how strongly it shapes the model&apos;s decision boundaries.
+          </p>
+          <ul className="mt-4 space-y-2 text-xs text-muted-foreground">
+            <li className="flex items-start gap-2">
+              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
+              Sums to 100% across all 6 features.
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
+              Highest signal: <span className="font-mono text-foreground">media_type</span> (28%).
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
+              Computed at training time per niche / personal model.
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section className="mt-6 grid gap-4 md:grid-cols-3">
+        {[
+          {
+            title: "Format dominates the niche split",
+            body: "media_type accounts for ~28% of impurity reduction — the model relies heavily on whether a post is Reels, Carousel or Single Image.",
+          },
+          {
+            title: "Posting time is the runner-up",
+            body: "posting_hour and posting_day together carry ~33% of the model's decision weight in this niche.",
+          },
+          {
+            title: "Caption signals are secondary",
+            body: "caption_length, hashtag_count and has_cta together account for ~39% — they inform but rarely drive the classification alone.",
+          },
+        ].map((c, i) => (
+          <div
+            key={c.title}
+            className="rounded-2xl border border-border bg-surface/60 p-5 backdrop-blur-xl"
+            style={{ animation: `slide-up 0.5s ${i * 80}ms both` }}
+          >
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-[color-mix(in_oklab,hsl(var(--primary))_18%,transparent)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary">
+              Insight
+            </div>
+            <div className="mt-3 font-display text-base font-semibold">{c.title}</div>
+            <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{c.body}</p>
+          </div>
+        ))}
+      </section>
+
+      {/* Next step CTA → Suggest */}
+      <section className="mt-10 overflow-hidden rounded-2xl border border-border-strong bg-gradient-to-br from-surface via-surface-2 to-surface p-6 md:p-8">
+        <div className="flex flex-col items-start justify-between gap-5 md:flex-row md:items-center">
+          <div className="flex items-start gap-4">
+            <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[color-mix(in_oklab,hsl(var(--primary))_14%,transparent)]">
+              <Lightbulb className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <div className="text-[11px] uppercase tracking-[0.18em] text-primary">
+                Next step
+              </div>
+              <h3 className="mt-1 font-display text-xl font-semibold">
+                Turn these signals into recommendations
+              </h3>
+              <p className="mt-1 max-w-xl text-sm text-muted-foreground">
+                See concrete adjustments to caption length, hashtags, posting time and CTA based on this niche&apos;s feature importance.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/suggest"
+            className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow-purple)] transition-all hover:scale-[1.02] active:scale-[0.98]"
+          >
+            Continue to Suggest
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </section>
+    </div>
+  );
+}

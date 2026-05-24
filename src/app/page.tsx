@@ -1,29 +1,19 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+"use client";
+
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Sparkles, ArrowRight, Lock, Mail, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { Logo } from "@/components/AppShell";
 
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "FAIV Predict — Sign in" },
-      {
-        name: "description",
-        content: "Sign in to FAIV Predict — AI content performance prediction for creative agencies.",
-      },
-    ],
-  }),
-  component: LoginPage,
-});
-
-function LoginPage() {
-  const navigate = useNavigate();
+export default function Page() {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => navigate({ to: "/dashboard" }), 600);
+    setTimeout(() => router.push("/dashboard"), 600);
   };
 
   return (
@@ -36,7 +26,7 @@ function LoginPage() {
           className="absolute -left-32 top-20 h-[420px] w-[420px] rounded-full"
           style={{
             background:
-              "radial-gradient(circle, color-mix(in oklab, var(--primary-glow) 35%, transparent), transparent 70%)",
+              "radial-gradient(circle, color-mix(in oklab, hsl(var(--primary-glow)) 35%, transparent), transparent 70%)",
             filter: "blur(80px)",
             animation: "glow-pulse 6s ease-in-out infinite",
           }}
@@ -46,7 +36,7 @@ function LoginPage() {
           className="absolute right-0 bottom-0 h-[500px] w-[500px] rounded-full"
           style={{
             background:
-              "radial-gradient(circle, color-mix(in oklab, var(--secondary-glow) 30%, transparent), transparent 70%)",
+              "radial-gradient(circle, color-mix(in oklab, hsl(var(--secondary-glow)) 30%, transparent), transparent 70%)",
             filter: "blur(100px)",
           }}
         />
@@ -115,7 +105,7 @@ function LoginPage() {
             className="absolute -top-40 left-1/2 h-[500px] w-[500px] -translate-x-1/2 rounded-full"
             style={{
               background:
-                "radial-gradient(circle, color-mix(in oklab, var(--primary-glow) 30%, transparent), transparent 70%)",
+                "radial-gradient(circle, color-mix(in oklab, hsl(var(--primary-glow)) 30%, transparent), transparent 70%)",
               filter: "blur(80px)",
             }}
           />
@@ -190,7 +180,7 @@ function LoginPage() {
 
             <p className="pt-2 text-center text-xs text-muted-foreground">
               No account?{" "}
-              <Link to="/dashboard" className="font-medium text-primary hover:underline">
+              <Link href="/dashboard" className="font-medium text-primary hover:underline">
                 Request a demo
               </Link>
             </p>
@@ -217,7 +207,7 @@ function Field({
         <span className="text-xs font-medium text-foreground">{label}</span>
         {hint}
       </div>
-      <div className="group relative flex items-center rounded-xl border border-border bg-surface/70 px-3.5 transition-all focus-within:border-ring focus-within:shadow-[0_0_0_4px_color-mix(in_oklab,var(--ring)_18%,transparent)]">
+      <div className="group relative flex items-center rounded-xl border border-border bg-surface/70 px-3.5 transition-all focus-within:border-ring focus-within:shadow-[0_0_0_4px_color-mix(in_oklab,hsl(var(--ring))_18%,transparent)]">
         <span className="text-muted-foreground">{icon}</span>
         <input
           {...props}

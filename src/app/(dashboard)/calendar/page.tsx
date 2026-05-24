@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+"use client";
+
 import { useMemo, useRef, useState } from "react";
-import { AppShell } from "@/components/AppShell";
 import { SectionHeader } from "@/components/SectionHeader";
 import { TierBadge } from "@/components/TierBadge";
 import { BRANDS, type Tier, type ContentFormat } from "@/lib/mock-data";
@@ -16,20 +16,6 @@ import {
   Save,
   Loader2,
 } from "lucide-react";
-
-export const Route = createFileRoute("/calendar")({
-  head: () => ({
-    meta: [
-      { title: "Calendar — FAIV Predict" },
-      {
-        name: "description",
-        content:
-          "Plan, score and export your monthly content calendar with predicted tier per post.",
-      },
-    ],
-  }),
-  component: CalendarPage,
-});
 
 // ---------------------------------------------------------------------------
 // Types
@@ -78,7 +64,7 @@ const WEEK_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 // ---------------------------------------------------------------------------
 // Page
 // ---------------------------------------------------------------------------
-function CalendarPage() {
+export default function CalendarPage() {
   const [entries, setEntries] = useState<CalendarEntry[]>(SEED_ENTRIES);
   const [cursor, setCursor] = useState<{ y: number; m: number }>({ y: yyyy, m: mm });
   const [view, setView] = useState<"month" | "list">("month");
@@ -99,16 +85,12 @@ function CalendarPage() {
 
   const grid = useMemo(() => buildMonthGrid(cursor.y, cursor.m), [cursor]);
 
-  // ------- Mock API: GET /api/v1/calendar/{account_id}?month=YYYY-MM -------
-  // (already loaded into local state from SEED_ENTRIES)
-
   // ------- Mock API: POST /api/v1/calendar/import -------
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setImporting(true);
     await new Promise((r) => setTimeout(r, 1100));
-    // pretend the API parsed file → returned 4 fresh predicted entries
     const fresh: CalendarEntry[] = [
       { id: `imp-${Date.now()}-1`, date: ymd(cursor.y, cursor.m, 6), time: "08:30", account: "@nova.studio", format: "Reels", caption: file.name + " · row 1", tier: "High", confidence: 88, status: "predicted" },
       { id: `imp-${Date.now()}-2`, date: ymd(cursor.y, cursor.m, 14), time: "13:00", account: "@nova.studio", format: "Carousel", caption: file.name + " · row 2", tier: "Average", confidence: 71, status: "predicted" },
@@ -127,7 +109,6 @@ function CalendarPage() {
     setExporting(false);
   };
 
-  // ------- Mock API: PATCH /api/v1/calendar/{entry_id} -------
   const handleSave = (next: CalendarEntry) => {
     setEntries((prev) =>
       prev.some((e) => e.id === next.id)
@@ -150,244 +131,242 @@ function CalendarPage() {
   const goToday = () => setCursor({ y: yyyy, m: mm });
 
   return (
-    <AppShell>
-      <div className="px-5 py-8 md:px-10 md:py-10">
-        <SectionHeader
-          eyebrow="Content planning"
-          title="Calendar"
-          description="Plan your month, see predicted tier per post, and edit any entry inline."
-          actions={
-            <div className="flex flex-wrap items-center gap-2">
-              <input
-                ref={fileRef}
-                type="file"
-                accept=".xlsx,.csv"
-                className="hidden"
-                onChange={handleImport}
-              />
-              <button
-                type="button"
-                onClick={() => fileRef.current?.click()}
-                disabled={importing}
-                className="inline-flex items-center gap-2 rounded-xl border border-border-strong bg-surface px-4 py-2 text-sm font-medium hover:bg-surface-2 active:scale-[0.98] disabled:opacity-60"
-              >
-                {importing ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <UploadCloud className="h-4 w-4" />
-                )}
-                {importing ? "Importing…" : "Upload Excel / CSV"}
-              </button>
-              <button
-                type="button"
-                onClick={handleExport}
-                disabled={exporting}
-                className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow-purple)] transition-all hover:scale-[1.01] active:scale-[0.98] disabled:opacity-60"
-              >
-                {exporting ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Download className="h-4 w-4" />
-                )}
-                Export to Excel
-              </button>
-            </div>
-          }
-        />
-
-        {/* Toolbar — month nav + view toggle */}
-        <div className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-surface/60 p-3 backdrop-blur-xl">
-          <div className="flex items-center gap-2">
+    <div className="px-5 py-8 md:px-10 md:py-10">
+      <SectionHeader
+        eyebrow="Content planning"
+        title="Calendar"
+        description="Plan your month, see predicted tier per post, and edit any entry inline."
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            <input
+              ref={fileRef}
+              type="file"
+              accept=".xlsx,.csv"
+              className="hidden"
+              onChange={handleImport}
+            />
             <button
               type="button"
-              onClick={goPrev}
-              className="grid h-9 w-9 place-items-center rounded-lg border border-border bg-surface hover:bg-surface-2 active:scale-95"
-              aria-label="Previous month"
+              onClick={() => fileRef.current?.click()}
+              disabled={importing}
+              className="inline-flex items-center gap-2 rounded-xl border border-border-strong bg-surface px-4 py-2 text-sm font-medium hover:bg-surface-2 active:scale-[0.98] disabled:opacity-60"
             >
-              <ChevronLeft className="h-4 w-4" />
+              {importing ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <UploadCloud className="h-4 w-4" />
+              )}
+              {importing ? "Importing…" : "Upload Excel / CSV"}
             </button>
             <button
               type="button"
-              onClick={goNext}
-              className="grid h-9 w-9 place-items-center rounded-lg border border-border bg-surface hover:bg-surface-2 active:scale-95"
-              aria-label="Next month"
+              onClick={handleExport}
+              disabled={exporting}
+              className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow-purple)] transition-all hover:scale-[1.01] active:scale-[0.98] disabled:opacity-60"
             >
-              <ChevronRight className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              onClick={goToday}
-              className="rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium hover:bg-surface-2 active:scale-95"
-            >
-              Today
-            </button>
-            <div className="ml-2 font-display text-xl font-semibold tracking-tight">
-              {MONTH_NAMES[cursor.m]} {cursor.y}
-            </div>
-            <span className="ml-2 rounded-full border border-border bg-surface-2 px-2 py-0.5 font-mono text-[10px] text-muted-foreground">
-              {monthEntries.length} posts
-            </span>
-          </div>
-
-          <div className="flex items-center gap-1 rounded-lg border border-border bg-surface-2 p-1 text-xs">
-            <button
-              type="button"
-              onClick={() => setView("month")}
-              className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 transition ${
-                view === "month"
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <CalendarIcon className="h-3.5 w-3.5" />
-              Month
-            </button>
-            <button
-              type="button"
-              onClick={() => setView("list")}
-              className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 transition ${
-                view === "list"
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <List className="h-3.5 w-3.5" />
-              List
+              {exporting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4" />
+              )}
+              Export to Excel
             </button>
           </div>
+        }
+      />
+
+      {/* Toolbar — month nav + view toggle */}
+      <div className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-surface/60 p-3 backdrop-blur-xl">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={goPrev}
+            className="grid h-9 w-9 place-items-center rounded-lg border border-border bg-surface hover:bg-surface-2 active:scale-95"
+            aria-label="Previous month"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={goNext}
+            className="grid h-9 w-9 place-items-center rounded-lg border border-border bg-surface hover:bg-surface-2 active:scale-95"
+            aria-label="Next month"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={goToday}
+            className="rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium hover:bg-surface-2 active:scale-95"
+          >
+            Today
+          </button>
+          <div className="ml-2 font-display text-xl font-semibold tracking-tight">
+            {MONTH_NAMES[cursor.m]} {cursor.y}
+          </div>
+          <span className="ml-2 rounded-full border border-border bg-surface-2 px-2 py-0.5 font-mono text-[10px] text-muted-foreground">
+            {monthEntries.length} posts
+          </span>
         </div>
 
-        {/* Calendar / List */}
-        {view === "month" ? (
-          <section className="mt-5 overflow-hidden rounded-2xl border border-border bg-surface/60 backdrop-blur-xl">
-            {/* Weekday header */}
-            <div className="grid grid-cols-7 border-b border-border bg-surface-2/60">
-              {WEEK_LABELS.map((w) => (
+        <div className="flex items-center gap-1 rounded-lg border border-border bg-surface-2 p-1 text-xs">
+          <button
+            type="button"
+            onClick={() => setView("month")}
+            className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 transition ${
+              view === "month"
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <CalendarIcon className="h-3.5 w-3.5" />
+            Month
+          </button>
+          <button
+            type="button"
+            onClick={() => setView("list")}
+            className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 transition ${
+              view === "list"
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <List className="h-3.5 w-3.5" />
+            List
+          </button>
+        </div>
+      </div>
+
+      {/* Calendar / List */}
+      {view === "month" ? (
+        <section className="mt-5 overflow-hidden rounded-2xl border border-border bg-surface/60 backdrop-blur-xl">
+          {/* Weekday header */}
+          <div className="grid grid-cols-7 border-b border-border bg-surface-2/60">
+            {WEEK_LABELS.map((w) => (
+              <div
+                key={w}
+                className="px-3 py-2.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+              >
+                {w}
+              </div>
+            ))}
+          </div>
+          {/* Cells */}
+          <div className="grid grid-cols-7">
+            {grid.map((cell, idx) => {
+              const dateStr = ymd(cell.year, cell.month, cell.day);
+              const dayEntries = entries.filter((e) => e.date === dateStr);
+              const isToday =
+                cell.year === today.getFullYear() &&
+                cell.month === today.getMonth() &&
+                cell.day === today.getDate();
+              return (
                 <div
-                  key={w}
-                  className="px-3 py-2.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                  key={idx}
+                  className={`group relative min-h-[120px] border-b border-r border-border p-2 transition-colors hover:bg-surface-2/60 ${
+                    cell.inMonth ? "" : "bg-surface-2/30 text-muted-foreground/60"
+                  } ${(idx + 1) % 7 === 0 ? "border-r-0" : ""}`}
                 >
-                  {w}
-                </div>
-              ))}
-            </div>
-            {/* Cells */}
-            <div className="grid grid-cols-7">
-              {grid.map((cell, idx) => {
-                const dateStr = ymd(cell.year, cell.month, cell.day);
-                const dayEntries = entries.filter((e) => e.date === dateStr);
-                const isToday =
-                  cell.year === today.getFullYear() &&
-                  cell.month === today.getMonth() &&
-                  cell.day === today.getDate();
-                return (
-                  <div
-                    key={idx}
-                    className={`group relative min-h-[120px] border-b border-r border-border p-2 transition-colors hover:bg-surface-2/60 ${
-                      cell.inMonth ? "" : "bg-surface-2/30 text-muted-foreground/60"
-                    } ${(idx + 1) % 7 === 0 ? "border-r-0" : ""}`}
-                  >
-                    <div className="mb-1.5 flex items-center justify-between">
-                      <span
-                        className={`grid h-6 min-w-6 place-items-center rounded-full px-1.5 text-[11px] font-semibold tabular-nums ${
-                          isToday
-                            ? "bg-primary text-primary-foreground shadow-[0_0_10px_var(--primary)]"
-                            : ""
-                        }`}
+                  <div className="mb-1.5 flex items-center justify-between">
+                    <span
+                      className={`grid h-6 min-w-6 place-items-center rounded-full px-1.5 text-[11px] font-semibold tabular-nums ${
+                        isToday
+                          ? "bg-primary text-primary-foreground shadow-[0_0_10px_hsl(var(--primary))]"
+                          : ""
+                      }`}
+                    >
+                      {cell.day}
+                    </span>
+                    {cell.inMonth && (
+                      <button
+                        type="button"
+                        onClick={() => setCreatingDate(dateStr)}
+                        className="grid h-5 w-5 place-items-center rounded-md text-muted-foreground opacity-0 transition-opacity hover:bg-surface-3 hover:text-foreground group-hover:opacity-100"
+                        aria-label="Add entry"
                       >
-                        {cell.day}
-                      </span>
-                      {cell.inMonth && (
-                        <button
-                          type="button"
-                          onClick={() => setCreatingDate(dateStr)}
-                          className="grid h-5 w-5 place-items-center rounded-md text-muted-foreground opacity-0 transition-opacity hover:bg-surface-3 hover:text-foreground group-hover:opacity-100"
-                          aria-label="Add entry"
-                        >
-                          <Plus className="h-3 w-3" />
-                        </button>
-                      )}
-                    </div>
-                    <div className="space-y-1">
-                      {dayEntries.slice(0, 3).map((e) => (
-                        <button
-                          key={e.id}
-                          type="button"
-                          onClick={() => setEditing(e)}
-                          className="block w-full text-left"
-                        >
-                          <EntryChip entry={e} />
-                        </button>
-                      ))}
-                      {dayEntries.length > 3 && (
-                        <div className="px-1 text-[10px] text-muted-foreground">
-                          +{dayEntries.length - 3} more
-                        </div>
-                      )}
-                    </div>
+                        <Plus className="h-3 w-3" />
+                      </button>
+                    )}
                   </div>
-                );
-              })}
-            </div>
-          </section>
-        ) : (
-          <section className="mt-5 overflow-hidden rounded-2xl border border-border bg-surface/60 backdrop-blur-xl">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border text-left text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-                    <th className="px-5 py-4 font-medium">Date</th>
-                    <th className="px-5 py-4 font-medium">Time</th>
-                    <th className="px-5 py-4 font-medium">Account</th>
-                    <th className="px-5 py-4 font-medium">Format</th>
-                    <th className="px-5 py-4 font-medium">Caption</th>
-                    <th className="px-5 py-4 font-medium">Confidence</th>
-                    <th className="px-5 py-4 font-medium">Tier</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {monthEntries
-                    .slice()
-                    .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time))
-                    .map((r, i) => (
-                      <tr
-                        key={r.id}
-                        onClick={() => setEditing(r)}
-                        className="cursor-pointer border-b border-border/60 last:border-0 hover:bg-surface-2/60"
-                        style={{ animation: `slide-up 0.3s ${i * 30}ms both` }}
+                  <div className="space-y-1">
+                    {dayEntries.slice(0, 3).map((e) => (
+                      <button
+                        key={e.id}
+                        type="button"
+                        onClick={() => setEditing(e)}
+                        className="block w-full text-left"
                       >
-                        <td className="px-5 py-3.5 font-mono text-xs text-muted-foreground">
-                          {formatDayLabel(r.date)}
-                        </td>
-                        <td className="px-5 py-3.5 font-mono text-xs">{r.time}</td>
-                        <td className="px-5 py-3.5 font-medium">{r.account}</td>
-                        <td className="px-5 py-3.5">
-                          <span className="rounded-md border border-border bg-surface-3 px-2 py-0.5 text-[11px] text-muted-foreground">
-                            {r.format}
-                          </span>
-                        </td>
-                        <td className="max-w-[320px] truncate px-5 py-3.5 text-xs text-muted-foreground">
-                          {r.caption}
-                        </td>
-                        <td className="px-5 py-3.5 font-mono text-xs">{r.confidence}%</td>
-                        <td className="px-5 py-3.5">
-                          <TierBadge tier={r.tier} />
-                        </td>
-                      </tr>
+                        <EntryChip entry={e} />
+                      </button>
                     ))}
-                  {monthEntries.length === 0 && (
-                    <tr>
-                      <td colSpan={7} className="px-5 py-12 text-center text-sm text-muted-foreground">
-                        No entries this month yet. Upload a file or click a date to add one.
+                    {dayEntries.length > 3 && (
+                      <div className="px-1 text-[10px] text-muted-foreground">
+                        +{dayEntries.length - 3} more
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      ) : (
+        <section className="mt-5 overflow-hidden rounded-2xl border border-border bg-surface/60 backdrop-blur-xl">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border text-left text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                  <th className="px-5 py-4 font-medium">Date</th>
+                  <th className="px-5 py-4 font-medium">Time</th>
+                  <th className="px-5 py-4 font-medium">Account</th>
+                  <th className="px-5 py-4 font-medium">Format</th>
+                  <th className="px-5 py-4 font-medium">Caption</th>
+                  <th className="px-5 py-4 font-medium">Confidence</th>
+                  <th className="px-5 py-4 font-medium">Tier</th>
+                </tr>
+              </thead>
+              <tbody>
+                {monthEntries
+                  .slice()
+                  .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time))
+                  .map((r, i) => (
+                    <tr
+                      key={r.id}
+                      onClick={() => setEditing(r)}
+                      className="cursor-pointer border-b border-border/60 last:border-0 hover:bg-surface-2/60"
+                      style={{ animation: `slide-up 0.3s ${i * 30}ms both` }}
+                    >
+                      <td className="px-5 py-3.5 font-mono text-xs text-muted-foreground">
+                        {formatDayLabel(r.date)}
+                      </td>
+                      <td className="px-5 py-3.5 font-mono text-xs">{r.time}</td>
+                      <td className="px-5 py-3.5 font-medium">{r.account}</td>
+                      <td className="px-5 py-3.5">
+                        <span className="rounded-md border border-border bg-surface-3 px-2 py-0.5 text-[11px] text-muted-foreground">
+                          {r.format}
+                        </span>
+                      </td>
+                      <td className="max-w-[320px] truncate px-5 py-3.5 text-xs text-muted-foreground">
+                        {r.caption}
+                      </td>
+                      <td className="px-5 py-3.5 font-mono text-xs">{r.confidence}%</td>
+                      <td className="px-5 py-3.5">
+                        <TierBadge tier={r.tier} />
                       </td>
                     </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        )}
-      </div>
+                  ))}
+                {monthEntries.length === 0 && (
+                  <tr>
+                    <td colSpan={7} className="px-5 py-12 text-center text-sm text-muted-foreground">
+                      No entries this month yet. Upload a file or click a date to add one.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
 
       {/* Edit / create modal */}
       {(editing || creatingDate) && (
@@ -414,7 +393,7 @@ function CalendarPage() {
           onDelete={editing ? () => handleDelete(editing.id) : undefined}
         />
       )}
-    </AppShell>
+    </div>
   );
 }
 
@@ -424,10 +403,10 @@ function CalendarPage() {
 function EntryChip({ entry }: { entry: CalendarEntry }) {
   const tone =
     entry.tier === "High"
-      ? "bg-[color-mix(in_oklab,var(--primary)_14%,transparent)] text-primary ring-[color-mix(in_oklab,var(--primary)_40%,transparent)]"
+      ? "bg-[color-mix(in_oklab,hsl(var(--primary))_14%,transparent)] text-primary ring-[color-mix(in_oklab,hsl(var(--primary))_40%,transparent)]"
       : entry.tier === "Average"
-      ? "bg-[color-mix(in_oklab,var(--warning)_18%,transparent)] text-[oklch(0.50_0.16_75)] dark:text-[oklch(0.85_0.16_75)] ring-[color-mix(in_oklab,var(--warning)_40%,transparent)]"
-      : "bg-[color-mix(in_oklab,var(--destructive)_14%,transparent)] text-[oklch(0.48_0.18_22)] dark:text-[oklch(0.78_0.20_22)] ring-[color-mix(in_oklab,var(--destructive)_35%,transparent)]";
+      ? "bg-[color-mix(in_oklab,hsl(var(--warning))_18%,transparent)] text-[oklch(0.50_0.16_75)] dark:text-[oklch(0.85_0.16_75)] ring-[color-mix(in_oklab,hsl(var(--warning))_40%,transparent)]"
+      : "bg-[color-mix(in_oklab,hsl(var(--destructive))_14%,transparent)] text-[oklch(0.48_0.18_22)] dark:text-[oklch(0.78_0.20_22)] ring-[color-mix(in_oklab,hsl(var(--destructive))_35%,transparent)]";
   return (
     <div
       className={`flex items-center gap-1.5 truncate rounded-md px-1.5 py-1 text-[11px] ring-1 ring-inset transition-all hover:scale-[1.01] ${tone}`}
@@ -486,24 +465,24 @@ function EntryModal({
 
         <div className="space-y-4 p-5">
           <div className="grid gap-3 sm:grid-cols-2">
-            <Field label="Date">
+            <ModalField label="Date">
               <input
                 type="date"
                 value={draft.date}
                 onChange={(e) => setDraft({ ...draft, date: e.target.value })}
                 className="h-10 w-full rounded-lg border border-border bg-surface-2 px-3 text-sm outline-none focus:border-ring"
               />
-            </Field>
-            <Field label="Time">
+            </ModalField>
+            <ModalField label="Time">
               <input
                 type="time"
                 value={draft.time}
                 onChange={(e) => setDraft({ ...draft, time: e.target.value })}
                 className="h-10 w-full rounded-lg border border-border bg-surface-2 px-3 text-sm outline-none focus:border-ring"
               />
-            </Field>
+            </ModalField>
           </div>
-          <Field label="Account">
+          <ModalField label="Account">
             <select
               value={draft.account}
               onChange={(e) => setDraft({ ...draft, account: e.target.value })}
@@ -515,8 +494,8 @@ function EntryModal({
                 </option>
               ))}
             </select>
-          </Field>
-          <Field label="Format">
+          </ModalField>
+          <ModalField label="Format">
             <div className="flex gap-2">
               {(["Reels", "Carousel", "Single Image"] as ContentFormat[]).map((f) => (
                 <button
@@ -525,7 +504,7 @@ function EntryModal({
                   onClick={() => setDraft({ ...draft, format: f })}
                   className={`flex-1 rounded-lg border px-3 py-2 text-xs font-medium transition ${
                     draft.format === f
-                      ? "border-primary bg-[color-mix(in_oklab,var(--primary)_15%,transparent)] text-primary"
+                      ? "border-primary bg-[color-mix(in_oklab,hsl(var(--primary))_15%,transparent)] text-primary"
                       : "border-border bg-surface-2 text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -533,8 +512,8 @@ function EntryModal({
                 </button>
               ))}
             </div>
-          </Field>
-          <Field label="Caption">
+          </ModalField>
+          <ModalField label="Caption">
             <textarea
               value={draft.caption}
               onChange={(e) => setDraft({ ...draft, caption: e.target.value })}
@@ -542,9 +521,9 @@ function EntryModal({
               className="w-full rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm outline-none focus:border-ring"
               placeholder="What's the post about?"
             />
-          </Field>
+          </ModalField>
           <div className="grid gap-3 sm:grid-cols-2">
-            <Field label="Predicted tier">
+            <ModalField label="Predicted tier">
               <div className="flex gap-2">
                 {(["High", "Average", "Low"] as Tier[]).map((t) => (
                   <button
@@ -553,7 +532,7 @@ function EntryModal({
                     onClick={() => setDraft({ ...draft, tier: t })}
                     className={`flex-1 rounded-lg border px-2 py-2 text-xs font-semibold uppercase tracking-wider transition ${
                       draft.tier === t
-                        ? "border-primary bg-[color-mix(in_oklab,var(--primary)_15%,transparent)] text-primary"
+                        ? "border-primary bg-[color-mix(in_oklab,hsl(var(--primary))_15%,transparent)] text-primary"
                         : "border-border bg-surface-2 text-muted-foreground hover:text-foreground"
                     }`}
                   >
@@ -561,8 +540,8 @@ function EntryModal({
                   </button>
                 ))}
               </div>
-            </Field>
-            <Field label={`Confidence · ${draft.confidence}%`}>
+            </ModalField>
+            <ModalField label={`Confidence · ${draft.confidence}%`}>
               <input
                 type="range"
                 min={30}
@@ -571,9 +550,9 @@ function EntryModal({
                 onChange={(e) =>
                   setDraft({ ...draft, confidence: Number(e.target.value) })
                 }
-                className="w-full accent-[var(--primary)]"
+                className="w-full accent-[hsl(var(--primary))]"
               />
-            </Field>
+            </ModalField>
           </div>
         </div>
 
@@ -612,7 +591,7 @@ function EntryModal({
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function ModalField({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
       <div className="mb-1.5 text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
@@ -630,22 +609,19 @@ type GridCell = { year: number; month: number; day: number; inMonth: boolean };
 
 function buildMonthGrid(year: number, month: number): GridCell[] {
   const first = new Date(year, month, 1);
-  const startWeekday = first.getDay(); // 0 (Sun) - 6 (Sat)
+  const startWeekday = first.getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const prevMonthDays = new Date(year, month, 0).getDate();
 
   const cells: GridCell[] = [];
-  // Leading days from prev month
   for (let i = startWeekday - 1; i >= 0; i--) {
     const d = prevMonthDays - i;
     const date = new Date(year, month - 1, d);
     cells.push({ year: date.getFullYear(), month: date.getMonth(), day: d, inMonth: false });
   }
-  // This month
   for (let d = 1; d <= daysInMonth; d++) {
     cells.push({ year, month, day: d, inMonth: true });
   }
-  // Trailing to fill 6 rows × 7 columns = 42 cells
   while (cells.length < 42) {
     const next = cells.length - (startWeekday + daysInMonth) + 1;
     const date = new Date(year, month + 1, next);

@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import { motion } from "framer-motion";
 import { Brain, Sparkles, AlertCircle, Info } from "lucide-react";
@@ -37,9 +39,9 @@ const META: Record<MaturityState, {
     short: "Cold start",
     Icon: AlertCircle,
     tone: "text-[oklch(0.55_0.18_45)] dark:text-[oklch(0.82_0.16_75)]",
-    ring: "ring-[color-mix(in_oklab,var(--warning)_40%,transparent)]",
-    bg: "bg-[color-mix(in_oklab,var(--warning)_12%,transparent)]",
-    dot: "bg-[var(--warning)]",
+    ring: "ring-[color-mix(in_oklab,hsl(var(--warning))_40%,transparent)]",
+    bg: "bg-[color-mix(in_oklab,hsl(var(--warning))_12%,transparent)]",
+    dot: "bg-warning",
     description: "Predictions use niche-level patterns until enough personal data is collected.",
   },
   learning: {
@@ -47,8 +49,8 @@ const META: Record<MaturityState, {
     short: "Learning",
     Icon: Brain,
     tone: "text-primary",
-    ring: "ring-[color-mix(in_oklab,var(--primary)_35%,transparent)]",
-    bg: "bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]",
+    ring: "ring-[color-mix(in_oklab,hsl(var(--primary))_35%,transparent)]",
+    bg: "bg-[color-mix(in_oklab,hsl(var(--primary))_10%,transparent)]",
     dot: "bg-primary",
     description: "Model is blending niche-level data with your account's emerging signal.",
   },
@@ -57,9 +59,9 @@ const META: Record<MaturityState, {
     short: "Personalized",
     Icon: Sparkles,
     tone: "text-[oklch(0.40_0.18_130)] dark:text-[oklch(0.85_0.20_130)]",
-    ring: "ring-[color-mix(in_oklab,var(--accent-lime)_45%,transparent)]",
-    bg: "bg-[color-mix(in_oklab,var(--accent-lime)_18%,transparent)]",
-    dot: "bg-[var(--accent-lime)]",
+    ring: "ring-[color-mix(in_oklab,hsl(var(--accent-lime))_45%,transparent)]",
+    bg: "bg-[color-mix(in_oklab,hsl(var(--accent-lime))_18%,transparent)]",
+    dot: "bg-accent-lime",
     description: "Predictions are tuned to this account's personal model.",
   },
 };
@@ -152,7 +154,7 @@ export function ModelMaturity({
                       ? "var(--gradient-lime)"
                       : state === "learning"
                       ? "var(--gradient-primary)"
-                      : "var(--warning)",
+                      : "hsl(var(--warning))",
                 }}
                 className="h-full w-full"
               />

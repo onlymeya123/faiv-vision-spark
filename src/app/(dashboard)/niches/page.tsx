@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+"use client";
+
 import { useState } from "react";
-import { AppShell } from "@/components/AppShell";
 import { SectionHeader } from "@/components/SectionHeader";
 import { BRANDS, NICHES, type Brand } from "@/lib/mock-data";
 import {
@@ -13,50 +13,34 @@ import {
   Loader2,
 } from "lucide-react";
 
-export const Route = createFileRoute("/niches")({
-  head: () => ({
-    meta: [
-      { title: "Niche Management — FAIV Predict" },
-      {
-        name: "description",
-        content:
-          "Manage brand accounts and their niche assignment. The hierarchical model picks the right fallback automatically.",
-      },
-    ],
-  }),
-  component: NichesPage,
-});
-
-function NichesPage() {
+export default function NichesPage() {
   const [showAddBrand, setShowAddBrand] = useState(false);
 
   return (
-    <AppShell>
-      <div className="px-5 py-8 md:px-10 md:py-10">
-        <SectionHeader
-          eyebrow="Niche management"
-          title="Brands & niches"
-          description="Each brand belongs to a niche. New brands start on the niche model and graduate to a personal one as they collect more samples."
-          actions={
-            <button
-              onClick={() => setShowAddBrand(true)}
-              className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow-purple)] transition-all hover:scale-[1.02] active:scale-[0.98]"
-            >
-              <Sparkles className="h-4 w-4" />
-              Add brand
-            </button>
-          }
-        />
+    <div className="px-5 py-8 md:px-10 md:py-10">
+      <SectionHeader
+        eyebrow="Niche management"
+        title="Brands & niches"
+        description="Each brand belongs to a niche. New brands start on the niche model and graduate to a personal one as they collect more samples."
+        actions={
+          <button
+            onClick={() => setShowAddBrand(true)}
+            className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow-purple)] transition-all hover:scale-[1.02] active:scale-[0.98]"
+          >
+            <Sparkles className="h-4 w-4" />
+            Add brand
+          </button>
+        }
+      />
 
-        <section className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {BRANDS.map((b, i) => (
-            <BrandCard key={b.id} brand={b} index={i} />
-          ))}
-        </section>
+      <section className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {BRANDS.map((b, i) => (
+          <BrandCard key={b.id} brand={b} index={i} />
+        ))}
+      </section>
 
-        {showAddBrand && <AddBrandDialog onClose={() => setShowAddBrand(false)} />}
-      </div>
-    </AppShell>
+      {showAddBrand && <AddBrandDialog onClose={() => setShowAddBrand(false)} />}
+    </div>
   );
 }
 
@@ -94,8 +78,8 @@ function BrandCard({ brand: b, index: i }: { brand: Brand; index: number }) {
           <span
             className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ring-1 ring-inset ${
               isPersonal
-                ? "bg-[color-mix(in_oklab,var(--accent-lime)_18%,transparent)] text-[oklch(0.40_0.18_130)] dark:text-[oklch(0.85_0.20_130)] ring-[color-mix(in_oklab,var(--accent-lime)_45%,transparent)]"
-                : "bg-[color-mix(in_oklab,var(--primary)_12%,transparent)] text-primary ring-[color-mix(in_oklab,var(--primary)_35%,transparent)]"
+                ? "bg-[color-mix(in_oklab,hsl(var(--accent-lime))_18%,transparent)] text-[oklch(0.40_0.18_130)] dark:text-[oklch(0.85_0.20_130)] ring-[color-mix(in_oklab,hsl(var(--accent-lime))_45%,transparent)]"
+                : "bg-[color-mix(in_oklab,hsl(var(--primary))_12%,transparent)] text-primary ring-[color-mix(in_oklab,hsl(var(--primary))_35%,transparent)]"
             }`}
           >
             {isPersonal ? <Sparkles className="h-3 w-3" /> : <Cpu className="h-3 w-3" />}
@@ -126,7 +110,7 @@ function BrandCard({ brand: b, index: i }: { brand: Brand; index: number }) {
       {b.drift && (
         <div
           role="alert"
-          className="mt-4 inline-flex w-full items-center gap-2 rounded-lg bg-[color-mix(in_oklab,var(--destructive)_12%,transparent)] px-3 py-2 text-xs font-semibold text-destructive ring-1 ring-inset ring-[color-mix(in_oklab,var(--destructive)_35%,transparent)] animate-pulse"
+          className="mt-4 inline-flex w-full items-center gap-2 rounded-lg bg-[color-mix(in_oklab,hsl(var(--destructive))_12%,transparent)] px-3 py-2 text-xs font-semibold text-destructive ring-1 ring-inset ring-[color-mix(in_oklab,hsl(var(--destructive))_35%,transparent)] animate-pulse"
         >
           <AlertTriangle className="h-3.5 w-3.5" />
           Performance drop detected
@@ -189,13 +173,13 @@ function AddBrandDialog({ onClose }: { onClose: () => void }) {
       >
         <div className="flex items-start justify-between border-b border-border p-6">
           <div>
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-[color-mix(in_oklab,var(--primary)_15%,transparent)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-[color-mix(in_oklab,hsl(var(--primary))_15%,transparent)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary">
               <Sparkles className="h-3 w-3" />
               AI brand classifier
             </div>
             <h3 className="mt-2 font-display text-xl font-semibold tracking-tight">Add brand</h3>
             <p className="mt-1 text-xs text-muted-foreground">
-              Describe the business and audience — we'll suggest the best matching niche.
+              Describe the business and audience — we&apos;ll suggest the best matching niche.
             </p>
           </div>
           <button
@@ -208,40 +192,40 @@ function AddBrandDialog({ onClose }: { onClose: () => void }) {
         </div>
 
         <div className="grid gap-5 p-6 md:grid-cols-2">
-          <Field label="Brand name">
+          <DialogField label="Brand name">
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Lasence Bakeshop"
-              className="h-11 w-full rounded-xl border border-border bg-surface/60 px-3.5 text-sm outline-none transition-all focus:border-ring focus:shadow-[0_0_0_4px_color-mix(in_oklab,var(--ring)_20%,transparent)]"
+              className="h-11 w-full rounded-xl border border-border bg-surface/60 px-3.5 text-sm outline-none transition-all focus:border-ring focus:shadow-[0_0_0_4px_color-mix(in_oklab,hsl(var(--ring))_20%,transparent)]"
             />
-          </Field>
-          <Field label="Instagram handle">
+          </DialogField>
+          <DialogField label="Instagram handle">
             <input
               value={handle}
               onChange={(e) => setHandle(e.target.value)}
               placeholder="@lasence.bakeshop"
-              className="h-11 w-full rounded-xl border border-border bg-surface/60 px-3.5 font-mono text-sm outline-none transition-all focus:border-ring focus:shadow-[0_0_0_4px_color-mix(in_oklab,var(--ring)_20%,transparent)]"
+              className="h-11 w-full rounded-xl border border-border bg-surface/60 px-3.5 font-mono text-sm outline-none transition-all focus:border-ring focus:shadow-[0_0_0_4px_color-mix(in_oklab,hsl(var(--ring))_20%,transparent)]"
             />
-          </Field>
-          <Field label="Business description" full>
+          </DialogField>
+          <DialogField label="Business description" full>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
               placeholder="Artisan sourdough bakery in Bandung with seasonal pastries…"
-              className="w-full resize-none rounded-xl border border-border bg-surface/60 p-3.5 text-sm outline-none transition-all focus:border-ring focus:shadow-[0_0_0_4px_color-mix(in_oklab,var(--ring)_20%,transparent)]"
+              className="w-full resize-none rounded-xl border border-border bg-surface/60 p-3.5 text-sm outline-none transition-all focus:border-ring focus:shadow-[0_0_0_4px_color-mix(in_oklab,hsl(var(--ring))_20%,transparent)]"
             />
-          </Field>
-          <Field label="Target audience" full>
+          </DialogField>
+          <DialogField label="Target audience" full>
             <textarea
               value={audience}
               onChange={(e) => setAudience(e.target.value)}
               rows={2}
               placeholder="Urban professionals 25–40, weekend brunch crowd…"
-              className="w-full resize-none rounded-xl border border-border bg-surface/60 p-3.5 text-sm outline-none transition-all focus:border-ring focus:shadow-[0_0_0_4px_color-mix(in_oklab,var(--ring)_20%,transparent)]"
+              className="w-full resize-none rounded-xl border border-border bg-surface/60 p-3.5 text-sm outline-none transition-all focus:border-ring focus:shadow-[0_0_0_4px_color-mix(in_oklab,hsl(var(--ring))_20%,transparent)]"
             />
-          </Field>
+          </DialogField>
 
           <div className="md:col-span-2">
             <button
@@ -280,7 +264,7 @@ function AddBrandDialog({ onClose }: { onClose: () => void }) {
                       onClick={() => setPicked(s.niche)}
                       className={`group flex items-center gap-3 rounded-xl border p-3 text-left transition-all active:scale-[0.99] ${
                         active
-                          ? "border-primary bg-[color-mix(in_oklab,var(--primary)_8%,transparent)]"
+                          ? "border-primary bg-[color-mix(in_oklab,hsl(var(--primary))_8%,transparent)]"
                           : "border-border bg-surface hover:border-border-strong"
                       }`}
                     >
@@ -334,7 +318,7 @@ function AddBrandDialog({ onClose }: { onClose: () => void }) {
   );
 }
 
-function Field({
+function DialogField({
   label,
   children,
   full,

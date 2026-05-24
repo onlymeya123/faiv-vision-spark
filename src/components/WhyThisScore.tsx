@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import Link from "next/link";
 import { Sparkles, TrendingUp, TrendingDown, ArrowRight, Brain } from "lucide-react";
 
 export interface WhyReason {
@@ -25,7 +25,7 @@ export function WhyThisScore({ reasons, context }: WhyThisScoreProps) {
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-[color-mix(in_oklab,var(--primary)_12%,transparent)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-primary">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-[color-mix(in_oklab,hsl(var(--primary))_12%,transparent)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-primary">
             <Sparkles className="h-3 w-3" />
             Why this score
           </div>
@@ -43,7 +43,7 @@ export function WhyThisScore({ reasons, context }: WhyThisScoreProps) {
           )}
         </div>
         <Link
-          to="/diagnose"
+          href="/diagnose"
           className="group inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium text-foreground hover:bg-surface-2"
         >
           Full breakdown
@@ -60,8 +60,8 @@ export function WhyThisScore({ reasons, context }: WhyThisScoreProps) {
               <span
                 className={`mt-0.5 grid h-6 w-6 place-items-center rounded-md text-xs font-mono font-semibold ${
                   positive
-                    ? "bg-[color-mix(in_oklab,var(--accent-lime)_18%,transparent)] text-[oklch(0.40_0.18_130)] dark:text-[oklch(0.85_0.20_130)]"
-                    : "bg-[color-mix(in_oklab,var(--destructive)_15%,transparent)] text-destructive"
+                    ? "bg-[color-mix(in_oklab,hsl(var(--accent-lime))_18%,transparent)] text-[oklch(0.40_0.18_130)] dark:text-[oklch(0.85_0.20_130)]"
+                    : "bg-[color-mix(in_oklab,hsl(var(--destructive))_15%,transparent)] text-destructive"
                 }`}
               >
                 {i + 1}
@@ -83,7 +83,7 @@ export function WhyThisScore({ reasons, context }: WhyThisScoreProps) {
                       width: `${pct}%`,
                       background: positive
                         ? "var(--gradient-lime)"
-                        : "var(--destructive)",
+                        : "hsl(var(--destructive))",
                     }}
                   />
                 </div>

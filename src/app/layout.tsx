@@ -1,0 +1,23 @@
+import type { Metadata } from "next";
+import "./globals.css";
+
+export const metadata: Metadata = {
+  title: "FAIV Predict — AI content performance prediction",
+  description:
+    "AI-powered content performance prediction for creative agencies. Predict virality, diagnose performance, and optimize captions before you post.",
+  authors: [{ name: "FAIV" }],
+  openGraph: {
+    title: "FAIV Predict — AI content performance prediction",
+    description: "Predict virality, diagnose performance, and optimize captions before you post.",
+    type: "website",
+  },
+  twitter: { card: "summary_large_image" },
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en" className="light" suppressHydrationWarning>
+      <body>{children}</body>
+    </html>
+  );
+}
