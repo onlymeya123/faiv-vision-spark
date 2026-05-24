@@ -26,6 +26,9 @@ import {
   History,
   AlertTriangle,
   TrendingUp,
+  Activity,
+  Target,
+  BarChart3,
 } from "lucide-react";
 import { PostingHeatmap } from "@/components/PostingHeatmap";
 
@@ -156,53 +159,57 @@ function DashboardPage() {
 
         {/* KPIs */}
         <section className="mb-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {KPIS.map((kpi, i) => (
-            <div
-              key={kpi.id}
-              className="group relative overflow-hidden rounded-2xl border border-border bg-surface/60 p-5 backdrop-blur-xl transition-all hover:border-border-strong hover:-translate-y-0.5 hover:shadow-[var(--shadow-elevated)]"
-              style={{ animation: `slide-up 0.6s ${i * 80}ms both cubic-bezier(0.22, 1, 0.36, 1)` }}
-            >
+          {KPIS.map((kpi, i) => {
+            const KpiIcon = [TrendingUp, Sparkles, Activity, BarChart3][i] ?? Target;
+            return (
               <div
-                aria-hidden
-                className="absolute -right-12 -top-12 h-32 w-32 rounded-full opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-                style={{
-                  background:
-                    "radial-gradient(circle, color-mix(in oklab, var(--primary-glow) 35%, transparent), transparent 70%)",
-                  filter: "blur(30px)",
-                }}
-              />
-              <div className="relative">
-                <div className="flex items-center justify-between">
-                  <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-                    {kpi.label}
+                key={kpi.id}
+                className="group relative overflow-hidden rounded-2xl border border-border bg-surface/70 p-5 backdrop-blur-xl transition-all hover:border-border-strong hover:-translate-y-0.5 hover:shadow-[var(--shadow-elevated)]"
+                style={{ animation: `slide-up 0.6s ${i * 80}ms both cubic-bezier(0.22, 1, 0.36, 1)` }}
+              >
+                <div
+                  aria-hidden
+                  className="absolute -right-10 -top-10 h-28 w-28 rounded-full opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                  style={{
+                    background:
+                      "radial-gradient(circle, color-mix(in oklab, var(--primary-glow) 30%, transparent), transparent 70%)",
+                    filter: "blur(28px)",
+                  }}
+                />
+                <div className="relative">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="grid h-9 w-9 place-items-center rounded-xl bg-[color-mix(in_oklab,var(--primary)_10%,transparent)] text-primary">
+                      <KpiIcon className="h-[18px] w-[18px]" />
+                    </div>
+                    <div
+                      className={`inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                        kpi.trend === "up"
+                          ? "bg-[color-mix(in_oklab,var(--success)_15%,transparent)] text-[oklch(0.55_0.18_150)] dark:text-[oklch(0.78_0.18_150)]"
+                          : "bg-[color-mix(in_oklab,var(--destructive)_15%,transparent)] text-[oklch(0.55_0.22_22)] dark:text-[oklch(0.78_0.22_22)]"
+                      }`}
+                    >
+                      {kpi.trend === "up" ? (
+                        <ArrowUpRight className="h-3 w-3" />
+                      ) : (
+                        <ArrowDownRight className="h-3 w-3" />
+                      )}
+                      {kpi.delta}
+                    </div>
                   </div>
-                  <div
-                    className={`inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${
-                      kpi.trend === "up"
-                        ? "bg-[color-mix(in_oklab,var(--success)_18%,transparent)] text-[oklch(0.85_0.18_155)]"
-                        : "bg-[color-mix(in_oklab,var(--destructive)_18%,transparent)] text-[oklch(0.80_0.22_22)]"
-                    }`}
-                  >
-                    {kpi.trend === "up" ? (
-                      <ArrowUpRight className="h-3 w-3" />
-                    ) : (
-                      <ArrowDownRight className="h-3 w-3" />
-                    )}
-                    {kpi.delta}
+                  <div className="mt-4 font-display text-3xl font-semibold tabular-nums tracking-tight">
+                    {kpi.value}
                   </div>
+                  <div className="mt-1 text-[11px] font-medium text-muted-foreground">{kpi.label}</div>
+                  <div className="mt-0.5 text-[10px] text-muted-foreground/70">{kpi.sub}</div>
                 </div>
-                <div className="mt-4 font-display text-3xl font-semibold tracking-tight">
-                  {kpi.value}
-                </div>
-                <div className="mt-1 text-xs text-muted-foreground">{kpi.sub}</div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </section>
 
         {/* Charts row */}
         <section className="mb-10 grid gap-5 lg:grid-cols-[1.6fr_1fr]">
-          <div className="rounded-2xl border border-border bg-surface/60 p-6 backdrop-blur-xl">
+          <div className="rounded-2xl border border-border bg-surface/70 p-6 backdrop-blur-xl">
             <SectionHeader
               eyebrow="Last 30 days"
               title={<span className="text-2xl">Prediction volume</span>}
@@ -256,7 +263,7 @@ function DashboardPage() {
           </div>
 
           {/* Distribution */}
-          <div className="rounded-2xl border border-border bg-surface/60 p-6 backdrop-blur-xl">
+          <div className="rounded-2xl border border-border bg-surface/70 p-6 backdrop-blur-xl">
             <SectionHeader
               eyebrow="This week"
               title={<span className="text-2xl">Tier distribution</span>}
@@ -302,20 +309,21 @@ function DashboardPage() {
         </section>
 
         {/* Hierarchy panel — Model status per brand */}
-        <section className="mb-10 rounded-2xl border border-border bg-surface/60 p-6 backdrop-blur-xl">
-          <div className="mb-5 flex items-center justify-between">
+        <section className="mb-10 rounded-2xl border border-border bg-surface/70 p-6 backdrop-blur-xl">
+          <div className="mb-5 flex items-start justify-between gap-4">
             <div>
-              <div className="text-[11px] uppercase tracking-[0.18em] text-primary">
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-[color-mix(in_oklab,var(--primary)_30%,transparent)] bg-[color-mix(in_oklab,var(--primary)_8%,transparent)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-primary">
+                <span className="h-1 w-1 rounded-full bg-primary" />
                 Model hierarchy
               </div>
-              <h3 className="mt-1 font-display text-lg font-semibold">
+              <h3 className="mt-2.5 font-display text-lg font-semibold">
                 Per-brand model status
               </h3>
               <p className="mt-1 text-xs text-muted-foreground">
                 Personal Model activates at 200 samples. Below threshold, predictions fall back to the niche model.
               </p>
             </div>
-            <Link to="/niches" className="text-xs font-medium text-primary hover:underline">
+            <Link to="/niches" className="shrink-0 text-xs font-medium text-primary hover:underline">
               Manage brands →
             </Link>
           </div>
@@ -426,13 +434,14 @@ function DashboardPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-border bg-surface/60 backdrop-blur-xl">
-            <div className="flex items-center justify-between border-b border-border p-5">
+          <div className="rounded-2xl border border-border bg-surface/70 backdrop-blur-xl">
+            <div className="flex items-center justify-between border-b border-border px-5 py-4">
               <div>
-                <div className="text-[11px] uppercase tracking-[0.18em] text-primary">
+                <div className="inline-flex items-center gap-1.5 rounded-full border border-[color-mix(in_oklab,var(--primary)_30%,transparent)] bg-[color-mix(in_oklab,var(--primary)_8%,transparent)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-primary">
+                  <span className="h-1 w-1 animate-pulse rounded-full bg-primary" />
                   Live feed
                 </div>
-                <h3 className="mt-1 font-display text-lg font-semibold">
+                <h3 className="mt-2 font-display text-base font-semibold">
                   Recent predictions
                 </h3>
               </div>

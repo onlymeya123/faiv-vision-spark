@@ -11,6 +11,7 @@ import {
   Bell,
   Sun,
   Moon,
+  ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -45,53 +46,52 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen w-full text-foreground">
-      {/* Decorative aurora */}
-      <div
-        aria-hidden
-        className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
-      >
+      {/* Ambient glow blobs */}
+      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div
-          className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full opacity-60"
+          className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full opacity-50"
           style={{
             background:
-              "radial-gradient(circle, color-mix(in oklab, var(--primary-glow) 55%, transparent), transparent 70%)",
-            filter: "blur(80px)",
+              "radial-gradient(circle, color-mix(in oklab, var(--primary-glow) 50%, transparent), transparent 70%)",
+            filter: "blur(90px)",
             animation: "glow-pulse 6s ease-in-out infinite",
           }}
         />
         <div
-          className="absolute top-1/3 -right-40 h-[600px] w-[600px] rounded-full opacity-50"
+          className="absolute top-1/3 -right-40 h-[600px] w-[600px] rounded-full opacity-40"
           style={{
             background:
-              "radial-gradient(circle, color-mix(in oklab, var(--secondary-glow) 55%, transparent), transparent 70%)",
-            filter: "blur(100px)",
+              "radial-gradient(circle, color-mix(in oklab, var(--secondary-glow) 45%, transparent), transparent 70%)",
+            filter: "blur(110px)",
             animation: "glow-pulse 8s ease-in-out infinite",
           }}
         />
       </div>
 
       <div className="flex">
-        {/* Sidebar */}
-        <aside className="sticky top-0 hidden h-screen w-[248px] shrink-0 flex-col border-r border-border/60 bg-sidebar/60 backdrop-blur-xl md:flex">
-          <div className="flex items-center gap-2.5 px-5 pt-6 pb-8">
+        {/* ── Sidebar ── */}
+        <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-border bg-sidebar md:flex">
+          {/* Logo row — same height as topbar */}
+          <div className="flex h-16 shrink-0 items-center gap-3 border-b border-border px-4">
             <Logo />
-            <div className="leading-tight">
-              <div className="font-display text-[15px] font-semibold tracking-tight">
+            <div className="min-w-0 leading-tight">
+              <div className="font-display text-[14px] font-semibold tracking-tight">
                 FAIV<span className="text-primary"> Predict</span>
               </div>
-              <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+              <div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground/70">
                 Hierarchical RF
               </div>
             </div>
           </div>
 
-          <nav className="flex-1 overflow-y-auto px-3">
+          {/* Nav */}
+          <nav className="flex-1 overflow-y-auto px-2 py-4">
             {NAV_GROUPS.map((group) => (
-              <div key={group.label} className="mb-4">
-                <div className="px-2 pb-2 text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground/70">
+              <div key={group.label} className="mb-5">
+                <div className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/50">
                   {group.label}
                 </div>
-                <ul className="space-y-1">
+                <ul className="space-y-0.5">
                   {group.items.map((item) => {
                     const active =
                       location.pathname === item.to ||
@@ -102,25 +102,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                         <Link
                           to={item.to}
                           className={cn(
-                            "group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all duration-200",
+                            "group flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors",
                             active
-                              ? "bg-[color-mix(in_oklab,var(--primary)_12%,transparent)] text-foreground"
-                              : "text-muted-foreground hover:bg-surface-2 hover:text-foreground"
+                              ? "bg-sidebar-accent text-foreground"
+                              : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
                           )}
                         >
-                          {active && (
-                            <span
-                              aria-hidden
-                              className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full bg-primary shadow-[0_0_12px_var(--primary)]"
-                            />
-                          )}
-                          <Icon
+                          <span
                             className={cn(
-                              "h-[17px] w-[17px] shrink-0 transition-colors",
-                              active ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                              "grid h-[26px] w-[26px] shrink-0 place-items-center rounded-md transition-colors",
+                              active
+                                ? "bg-[color-mix(in_oklab,var(--primary)_15%,transparent)] text-primary"
+                                : "text-muted-foreground/60 group-hover:text-muted-foreground"
                             )}
-                          />
-                          <span className="font-medium">{item.label}</span>
+                          >
+                            <Icon className="h-[14px] w-[14px]" />
+                          </span>
+                          <span>{item.label}</span>
                         </Link>
                       </li>
                     );
@@ -130,59 +128,68 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             ))}
           </nav>
 
-          <div className="m-3 rounded-xl border border-border-strong bg-gradient-to-br from-surface-2 to-surface p-4">
-            <div className="flex items-center gap-2">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
-              </span>
-              <div className="text-xs font-medium">All systems online</div>
-            </div>
-            <div className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-              Prediction service is healthy
+          {/* User footer */}
+          <div className="shrink-0 border-t border-border p-2">
+            <div className="flex items-center gap-2.5 rounded-lg px-2.5 py-2.5 transition-colors hover:bg-sidebar-accent/50 cursor-pointer">
+              <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-primary to-secondary-glow text-[11px] font-bold text-primary-foreground">
+                AM
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-[13px] font-medium text-sidebar-foreground">
+                  Alex Morgan
+                </div>
+                <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[oklch(0.72_0.16_150)] shadow-[0_0_6px_oklch(0.72_0.16_150)]" />
+                  Strategist · Nova
+                </div>
+              </div>
+              <ChevronDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
             </div>
           </div>
         </aside>
 
-        {/* Main */}
+        {/* ── Main content ── */}
         <div className="flex min-h-screen flex-1 flex-col">
-          <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border/60 bg-background/60 px-5 backdrop-blur-xl md:px-8">
+          <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur-xl md:px-6">
+            {/* Left: mobile logo + search */}
             <div className="flex items-center gap-3">
               <div className="md:hidden">
                 <Logo />
               </div>
-              <div className="hidden items-center gap-2 rounded-lg border border-border bg-surface/50 px-3 py-1.5 text-sm text-muted-foreground transition-colors focus-within:border-ring md:flex">
-                <Search className="h-4 w-4" />
+              <div className="hidden items-center gap-2 rounded-xl border border-border bg-surface/60 px-3 py-2 text-sm text-muted-foreground transition-all focus-within:border-ring focus-within:bg-surface focus-within:shadow-[0_0_0_3px_color-mix(in_oklab,var(--ring)_15%,transparent)] md:flex">
+                <Search className="h-3.5 w-3.5 shrink-0" />
                 <input
-                  className="w-72 bg-transparent text-foreground outline-none placeholder:text-muted-foreground/70"
+                  className="w-60 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground/60"
                   placeholder="Search predictions, brands, models…"
                 />
-                <kbd className="rounded border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
+                <kbd className="ml-1 rounded-md border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
                   ⌘K
                 </kbd>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            {/* Right: actions */}
+            <div className="flex items-center gap-1">
               <button
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="grid h-9 w-9 place-items-center rounded-lg border border-border bg-surface/50 text-muted-foreground transition-all hover:text-foreground hover:border-border-strong"
+                className="grid h-9 w-9 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
                 aria-label="Toggle theme"
               >
                 {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </button>
-              <button className="relative grid h-9 w-9 place-items-center rounded-lg border border-border bg-surface/50 text-muted-foreground transition-all hover:text-foreground hover:border-border-strong">
+              <button className="relative grid h-9 w-9 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground">
                 <Bell className="h-4 w-4" />
-                <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_8px_var(--primary)]" />
+                <span className="absolute right-2.5 top-2.5 h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_6px_var(--primary)]" />
               </button>
-              <div className="ml-1 flex items-center gap-2 rounded-lg border border-border bg-surface/50 py-1 pl-1 pr-3">
-                <div className="grid h-7 w-7 place-items-center rounded-md bg-gradient-to-br from-primary to-secondary-glow text-[11px] font-semibold text-primary-foreground">
+              <div className="ml-1 hidden cursor-pointer items-center gap-2 rounded-lg border border-border bg-surface/60 px-2 py-1 transition-colors hover:bg-surface-2 sm:flex">
+                <div className="grid h-6 w-6 place-items-center rounded-md bg-gradient-to-br from-primary to-secondary-glow text-[10px] font-bold text-primary-foreground">
                   AM
                 </div>
-                <div className="hidden text-left leading-tight sm:block">
-                  <div className="text-xs font-medium">Alex Morgan</div>
-                  <div className="text-[10px] text-muted-foreground">Strategist · Nova</div>
+                <div className="text-left leading-tight">
+                  <div className="text-[12px] font-medium">Alex Morgan</div>
+                  <div className="text-[10px] text-muted-foreground">Strategist</div>
                 </div>
+                <ChevronDown className="h-3 w-3 text-muted-foreground" />
               </div>
             </div>
           </header>
@@ -194,10 +201,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function Logo({ size = 36 }: { size?: number }) {
+export function Logo({ size = 32 }: { size?: number }) {
   return (
     <div
-      className="relative grid place-items-center overflow-hidden rounded-xl"
+      className="relative grid shrink-0 place-items-center overflow-hidden rounded-xl"
       style={{
         width: size,
         height: size,

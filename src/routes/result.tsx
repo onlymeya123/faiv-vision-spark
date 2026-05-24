@@ -159,10 +159,10 @@ function ResultPage() {
             </section>
 
             {/* CLASS PROBABILITIES */}
-            <section className="mt-6 rounded-2xl border border-border bg-surface/60 p-6 backdrop-blur-xl">
-              <div className="mb-4 flex items-center justify-between">
+            <section className="mt-6 rounded-2xl border border-border bg-surface/70 p-6 backdrop-blur-xl">
+              <div className="mb-5 flex items-center justify-between border-b border-border pb-4">
                 <div>
-                  <h3 className="font-display text-lg font-semibold">Class probabilities</h3>
+                  <h3 className="font-display text-base font-semibold">Class probabilities</h3>
                   <p className="mt-1 text-xs text-muted-foreground">
                     Random Forest output — probabilities sum to 1.0 across the 3 niche-relative classes.
                   </p>
