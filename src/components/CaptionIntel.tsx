@@ -60,15 +60,15 @@ export function CaptionMeter({ count, className }: { count: number; className?: 
   const pct = Math.min(100, (count / CAPTION_MAX) * 100);
   const color =
     tone === "danger"
-      ? "var(--destructive)"
+      ? "hsl(var(--destructive))"
       : tone === "warning"
-      ? "var(--warning)"
-      : "var(--primary)";
+      ? "hsl(var(--warning))"
+      : "hsl(var(--primary))";
   const textTone =
     tone === "danger"
       ? "text-destructive"
       : tone === "warning"
-      ? "text-[var(--warning-foreground)] dark:text-[oklch(0.85_0.16_75)]"
+      ? "text-warning-foreground dark:text-[oklch(0.85_0.16_75)]"
       : "text-muted-foreground";
 
   return (
@@ -143,11 +143,11 @@ export function CaptionSignals({
 
   const toneClass = (t: string) =>
     t === "good"
-      ? "text-[oklch(0.40_0.18_130)] dark:text-[oklch(0.85_0.20_130)] bg-[color-mix(in_oklab,var(--accent-lime)_14%,transparent)]"
+      ? "text-[oklch(0.40_0.18_130)] dark:text-[oklch(0.85_0.20_130)] bg-[color-mix(in_oklab,hsl(var(--accent-lime))_14%,transparent)]"
       : t === "warning"
-      ? "text-[oklch(0.50_0.16_75)] dark:text-[oklch(0.85_0.16_75)] bg-[color-mix(in_oklab,var(--warning)_14%,transparent)]"
+      ? "text-[oklch(0.50_0.16_75)] dark:text-[oklch(0.85_0.16_75)] bg-[color-mix(in_oklab,hsl(var(--warning))_14%,transparent)]"
       : t === "info"
-      ? "text-primary bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
+      ? "text-primary bg-[color-mix(in_oklab,hsl(var(--primary))_10%,transparent)]"
       : "text-muted-foreground bg-surface-2";
 
   return (
@@ -186,7 +186,7 @@ export function CaptionLimitWarning({ count }: { count: number }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.18 }}
       role="alert"
-      className="mt-3 inline-flex items-center gap-2 rounded-lg bg-[color-mix(in_oklab,var(--destructive)_12%,transparent)] px-3 py-2 text-xs font-medium text-destructive ring-1 ring-inset ring-[color-mix(in_oklab,var(--destructive)_30%,transparent)]"
+      className="mt-3 inline-flex items-center gap-2 rounded-lg bg-[color-mix(in_oklab,hsl(var(--destructive))_12%,transparent)] px-3 py-2 text-xs font-medium text-destructive ring-1 ring-inset ring-[color-mix(in_oklab,hsl(var(--destructive))_30%,transparent)]"
     >
       <AlertTriangle className="h-3.5 w-3.5" />
       Over Instagram's 2,200 character limit by{" "}
